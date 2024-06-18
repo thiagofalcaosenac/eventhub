@@ -42,7 +42,7 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html">Home<br></a></li>
-          <li><a href="usuario.html" class="active">Usuário</a></li>
+          <li><a href="usuario.php" class="active">Usuário</a></li>
           <li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="listar_espacos.html">Listagem</a></li>
@@ -83,8 +83,8 @@
 
           <div class="col-lg-5 quote-bg" style="background-image: url(assets/img/quote-bg.jpg);"></div>
 
-          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-            <form action="forms/get-a-quote.php" method="post" class="php-email-form">
+          <div class="col-lg-7">
+            <form action="forms/usuario.php" method="post" enctype="multipart/form-data" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
               <!-- Usuário - id (PK), nome, email, senha, tipo, telefone, endereco, tipo (Enum Locador/Locatario) -->
 
               <div class="row gy-4">
@@ -102,27 +102,27 @@
                 </div>
 
                 <div class="col-md-12 ">
-                  <input type="email" class="form-control" name="email" placeholder="Email" required>
+                  <input type="email" name="email" class="form-control" placeholder="Email" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="password" class="form-control" name="senha" placeholder="senha" required>
+                  <input type="password" name="senha" class="form-control" placeholder="senha" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" class="form-control" name="telefone" placeholder="telefone" required>
+                  <input type="text" name="telefone" class="form-control" placeholder="telefone" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" class="form-control" name="endereco" placeholder="endereco" required>
+                  <input type="text" name="endereco" class="form-control" placeholder="endereco" required>
                 </div>
 
                 <div class="col-md-12">
-                  <label for="type">Escolha o perfil:</label>
-                  <select id="type" name="type">
-                    <option value="l">Locador</option>
-                    <option value="t">Locatário</option>
-                  </select>                  
+                  <label for="tipo">Escolha o perfil:</label>
+                  <select id="tipo" name="tipo">
+                    <option value="L">Locador</option>
+                    <option value="T">Locatário</option>
+                  </select>
                 </div>
 
                 <!-- <div class="col-md-12">
@@ -136,7 +136,6 @@
 
                   <button type="submit">Salvar</button>
                 </div>
-
               </div>
             </form>
           </div><!-- End Quote Form -->
