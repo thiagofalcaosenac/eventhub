@@ -1,3 +1,50 @@
+<?php
+
+// verifica se os campos foram preenchidos e se o formulário foi enviado
+if (isset($_POST['nome']) && 
+    isset($_POST['email']) && 
+    isset($_POST['senha']) &&
+    isset($_POST['telefone']) && 
+    isset($_POST['endereco']) &&
+    isset($_POST['tipo'])
+    ) {
+
+    // inclui o arquivo de conexão com o banco de dados
+    include("./config/connection.php");
+
+    // recebe os valores do formulário em variáveis locais
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $senha = $_POST['senha'];
+    $telefone = $_POST['telefone'];
+    $endereco = $_POST['endereco'];
+    $tipo = $_POST['tipo'];
+    
+    // cria a query de inserção no banco de dados
+    $sql = "INSERT INTO usuario (nome,email,senha,telefone,endereco,tipo) VALUES (:nome,:email,:senha,:telefone,:endereco,:tipo)";
+    // prepara a query para ser executada
+    $pdo = $pdo->prepare($sql);
+
+    // substitui os parâmetros da query
+    $pdo->bindParam(":nome", $nome);
+    $pdo->bindParam(":email", $email);
+    $pdo->bindParam(":senha", $senha);
+    $pdo->bindParam(":telefone", $telefone);
+    $pdo->bindParam(":endereco", $endereco);
+    $pdo->bindParam(":tipo", $tipo);
+
+    // executa a query
+    $pdo->execute();
+    // verifica se a query foi executada com sucesso
+
+    if ($pdo->rowCount() == 1) {
+        $mensagem = "Usuário inserida com sucesso!";
+    } else {
+        $mensagem = "Erro ao inserir usuário!";
+    }
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,8 +89,8 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html">Home<br></a></li>
-          <li><a href="usuario.html">Usuário</a></li>
-          <li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+          <li><a href="usuario.html" class="active">Usuário</a></li>
+          <li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
               <li><a href="listar_espacos.html">Listagem</a></li>
               <li><a href="espacos.html">Cadastro</a></li>
@@ -63,12 +110,12 @@
     <!-- Page Title -->
     <div class="page-title position-relative" data-aos="fade" style="background-image: url(assets/img/page-title-bg.jpg);">
       <div class="container position-relative">
-        <h1 class="">Tela de Espaços</h1>
-        <p>Nesta tela é possível fazer a manipulação de dados do espaço</p>
+        <h1 class="">Tela do Usuário</h1>
+        <p>Nessa tela é possível realizar a manipulação de dados do usuário</p>
         <nav class="breadcrumbs">
           <ol>
             <li><a href="index.html">Home</a></li>
-            <li class="current">Tela de Espaços</li>
+            <li class="current">Tela de Usuário</li>
           </ol>
         </nav>
       </div>
@@ -83,56 +130,59 @@
 
           <div class="col-lg-5 quote-bg" style="background-image: url(assets/img/quote-bg.jpg);"></div>
 
-          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-            <form action="forms/get-a-quote.php" method="post" class="php-email-form">
-              <!-- Espaço - id(PK), nome, descricao, capacidade, endereco, preco, comodidades, avaliacaoMedia, foto, id_usuario(FK) -->
+          <div class="col-lg-7">
+            <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200">
+              <!-- Usuário - id (PK), nome, email, senha, tipo, telefone, endereco, tipo (Enum Locador/Locatario) -->
 
               <div class="row gy-4">
 
                 <div class="col-lg-12">
-                  <h4>Informe dados do espaço</h4>
+                  <h4>Informe seus dados</h4>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="id" class="form-control" placeholder="Id" readonly>
+                  <input type="text" name="id" class="form-control" placeholder="Id" readonly hidden>
                 </div>
 
                 <div class="col-md-12">
                   <input type="text" name="nome" class="form-control" placeholder="Nome" required>
                 </div>
-                
-                <div class="col-md-12">
-                  <textarea class="form-control" name="descricao" rows="6" placeholder="Descrição" required=""></textarea>
+
+                <div class="col-md-12 ">
+                  <input type="email" name="email" class="form-control" placeholder="Email" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="int" name="capacidade" class="form-control" placeholder="Capacidade" required>
+                  <input type="password" name="senha" class="form-control" placeholder="senha" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="endereco" class="form-control" placeholder="Endereço" required>
+                  <input type="text" name="telefone" class="form-control" placeholder="telefone" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="number" min="0.00" max="100000.00" name="preco" class="form-control" placeholder="Preço" required>
+                  <input type="text" name="endereco" class="form-control" placeholder="endereco" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="int" name="comodidades" class="form-control" placeholder="Comodidades" required>
+                  <label for="tipo">Escolha o perfil:</label>
+                  <select id="tipo" name="tipo">
+                    <option value="L">Locador</option>
+                    <option value="T">Locatário</option>
+                  </select>
                 </div>
 
-                <div class="col-md-12">
-                  <input type="file" name="foto" class="form-control" placeholder="Foto" required>
-                </div>
+                <!-- <div class="col-md-12">
+                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+                </div> -->
 
                 <div class="col-md-12 text-center">
-                  <div class="loading">Carregando</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Sua requisição foi processada com sucesso!</div>
+                    <?php
+                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
+                    ?>
 
                   <button type="submit">Salvar</button>
                 </div>
-
               </div>
             </form>
           </div><!-- End Quote Form -->
