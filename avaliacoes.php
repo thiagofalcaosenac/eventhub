@@ -1,3 +1,42 @@
+<?php
+
+// verifica se os campos foram preenchidos e se o formulário foi enviado
+if (isset($_POST['classificacao']) && 
+    isset($_POST['comentario']) && 
+    isset($_POST['id_espaco'])
+    ) {
+
+    // inclui o arquivo de conexão com o banco de dados
+    include("./config/connection.php");
+
+    // recebe os valores do formulário em variáveis locais
+    $classificacao = $_POST['classificacao'];
+    $comentario = $_POST['comentario'];
+    $id_espaco = $_POST['id_espaco'];
+
+    // cria a query de inserção no banco de dados
+    $sql = "INSERT INTO avaliacao (classificacao,comentario,id_espaco) 
+    VALUES (:classificacao,:comentario,:id_espaco)";
+    // prepara a query para ser executada
+    $pdo = $pdo->prepare($sql);
+
+    // substitui os parâmetros da query
+    $pdo->bindParam(":classificacao", $classificacao);
+    $pdo->bindParam(":comentario", $comentario);
+    $pdo->bindParam(":id_espaco", $id_espaco);
+
+    // executa a query
+    $pdo->execute();
+    // verifica se a query foi executada com sucesso
+
+    if ($pdo->rowCount() == 1) {
+        $mensagem = "Avaliação inserida com sucesso!";
+    } else {
+        $mensagem = "Erro ao inserir avaliação!";
+    }
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,15 +81,15 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html">Home<br></a></li>
-          <li><a href="usuario.html">Usuário</a></li>
+          <li><a href="usuario.php">Usuário</a></li>
           <li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
-              <li><a href="espacos.html">Listagem</a></li>
-              <li><a href="listar_espacos.html">Cadastro</a></li>
+              <li><a href="espacos.php">Listagem</a></li>
+              <li><a href="listar_espacos.php">Cadastro</a></li>
             </ul>
           </li>
-          <li><a href="eventos.html">Eventos</a></li>
-          <li><a href="avaliacoes.html" class="active">Avaliações</a></li>
+          <li><a href="eventos.php">Eventos</a></li>
+          <li><a href="avaliacoes.php" class="active">Avaliações</a></li>
 
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -84,7 +123,7 @@
           <div class="col-lg-5 quote-bg" style="background-image: url(assets/img/quote-bg.jpg);"></div>
 
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-            <form action="forms/get-a-quote.php" method="post" class="php-email-form">
+            <form action="" method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
               <!-- Avaliação - id (PK), classificacao, comentario, id_usuario(FK), id_espaco(FK) -->
 
               <div class="row gy-4">
@@ -94,7 +133,7 @@
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="id" class="form-control" placeholder="Id" readonly>
+                  <input type="text" name="id" class="form-control" placeholder="Id" readonly hidden>
                 </div>
 
                 <div class="col-md-12">
@@ -116,9 +155,9 @@
                 </div>
 
                 <div class="col-md-12 text-center">
-                  <div class="loading">Carregando</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Sua requisição foi processada com sucesso!</div>
+                  <?php
+                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
+                  ?>
 
                   <button type="submit">Salvar</button>
                 </div>
@@ -205,7 +244,6 @@
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>

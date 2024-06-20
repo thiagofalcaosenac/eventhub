@@ -42,15 +42,15 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html">Home<br></a></li>
-          <li><a href="usuario.html">Usuário</a></li>
+          <li><a href="usuario.php">Usuário</a></li>
           <li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
-              <li><a href="listar_espacos.html">Listagem</a></li>
-              <li><a href="espacos.html">Cadastro</a></li>
+              <li><a href="listar_espacos.php">Listagem</a></li>
+              <li><a href="espacos.php">Cadastro</a></li>
             </ul>
           </li>
-          <li><a href="eventos.html">Eventos</a></li>
-          <li><a href="avaliacoes.html">Avaliações</a></li>
+          <li><a href="eventos.php">Eventos</a></li>
+          <li><a href="avaliacoes.php">Avaliações</a></li>
 
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>

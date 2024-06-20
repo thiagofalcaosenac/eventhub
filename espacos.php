@@ -107,15 +107,15 @@ if (isset($_POST['nome']) &&
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html">Home<br></a></li>
-          <li><a href="usuario.html">Usuário</a></li>
+          <li><a href="usuario.php">Usuário</a></li>
           <li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
-              <li><a href="listar_espacos.html">Listagem</a></li>
-              <li><a href="espacos.html">Cadastro</a></li>
+              <li><a href="listar_espacos.php">Listagem</a></li>
+              <li><a href="espacos.php">Cadastro</a></li>
             </ul>
           </li>
-          <li><a href="eventos.html">Eventos</a></li>
-          <li><a href="avaliacoes.html">Avaliações</a></li>
+          <li><a href="eventos.php">Eventos</a></li>
+          <li><a href="avaliacoes.php">Avaliações</a></li>
 
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -149,7 +149,7 @@ if (isset($_POST['nome']) &&
           <div class="col-lg-5 quote-bg" style="background-image: url(assets/img/quote-bg.jpg);"></div>
 
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-            <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200">
+            <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
               <!-- Espaço - id(PK), nome, descricao, capacidade, endereco, preco, comodidades, avaliacaoMedia, foto, id_usuario(FK) -->
 
               <div class="row gy-4">
@@ -280,7 +280,6 @@ if (isset($_POST['nome']) &&
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>

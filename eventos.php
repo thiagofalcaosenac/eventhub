@@ -1,3 +1,57 @@
+<?php
+
+// verifica se os campos foram preenchidos e se o formulário foi enviado
+if (isset($_POST['titulo']) && 
+    isset($_POST['descricao']) && 
+    isset($_POST['dataHoraInicial']) &&
+    isset($_POST['dataHoraFinal']) && 
+    isset($_POST['status']) &&
+    isset($_POST['tipo']) && 
+    isset($_POST['id_espaco']) &&
+    isset($_POST['precoTotal'])
+    ) {
+
+    // inclui o arquivo de conexão com o banco de dados
+    include("./config/connection.php");
+
+    // recebe os valores do formulário em variáveis locais
+    $titulo = $_POST['titulo'];
+    $descricao = $_POST['descricao'];
+    $dataHoraInicial = $_POST['dataHoraInicial'];
+    $dataHoraFinal = $_POST['dataHoraFinal'];
+    $status = $_POST['status'];
+    $tipo = $_POST['tipo'];
+    $id_espaco = $_POST['id_espaco'];
+    $precoTotal = $_POST['precoTotal'];
+
+    // cria a query de inserção no banco de dados
+    $sql = "INSERT INTO eventos (titulo,descricao,data_hora_inicial,data_hora_final,status,tipo,id_espaco,preco_total) 
+    VALUES (:titulo,:descricao,:dataHoraInicial,:dataHoraFinal,:status,:tipo,:id_espaco,:precoTotal)";
+    // prepara a query para ser executada
+    $pdo = $pdo->prepare($sql);
+
+    // substitui os parâmetros da query
+    $pdo->bindParam(":titulo", $titulo);
+    $pdo->bindParam(":descricao", $descricao);
+    $pdo->bindParam(":dataHoraInicial", $dataHoraInicial);
+    $pdo->bindParam(":dataHoraFinal", $dataHoraFinal);
+    $pdo->bindParam(":status", $status);
+    $pdo->bindParam(":tipo", $tipo);
+    $pdo->bindParam(":id_espaco", $id_espaco);
+    $pdo->bindParam(":precoTotal", $precoTotal);
+
+    // executa a query
+    $pdo->execute();
+    // verifica se a query foi executada com sucesso
+
+    if ($pdo->rowCount() == 1) {
+        $mensagem = "Evento inserido com sucesso!";
+    } else {
+        $mensagem = "Erro ao inserir evento!";
+    }
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,15 +96,15 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.html">Home<br></a></li>
-          <li><a href="usuario.html">Usuário</a></li>
+          <li><a href="usuario.php">Usuário</a></li>
           <li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
-              <li><a href="listar_espacos.html">Listagem</a></li>
-              <li><a href="espacos.html">Cadastro</a></li>
+              <li><a href="listar_espacos.php">Listagem</a></li>
+              <li><a href="espacos.php">Cadastro</a></li>
             </ul>
           </li>
-          <li><a href="eventos.html" class="active">Eventos</a></li>
-          <li><a href="avaliacoes.html">Avaliações</a></li>
+          <li><a href="eventos.php" class="active">Eventos</a></li>
+          <li><a href="avaliacoes.php">Avaliações</a></li>
 
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -84,7 +138,7 @@
           <div class="col-lg-5 quote-bg" style="background-image: url(assets/img/quote-bg.jpg);"></div>
 
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-            <form action="forms/get-a-quote.php" method="post" class="php-email-form">
+            <form action="" method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
               <!-- Evento - id(PK), titulo, descricao, dataHoraInicial, dataHoraFinal, tipo, status, precoTotal, id_usuario(FK), id_espaco(FK) -->
 
               <div class="row gy-4">
@@ -94,7 +148,7 @@
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="id" class="form-control" placeholder="Id" readonly>
+                  <input type="text" name="id" class="form-control" placeholder="Id" readonly hidden>
                 </div>
 
                 <div class="col-md-12">
@@ -114,16 +168,21 @@
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="status" class="form-control" placeholder="Status" readonly>
+                  <label for="status">Status:</label>
+                  <select id="status" name="status">
+                    <option value="A">Aberto</option>
+                    <option value="F">Finalizado</option>
+                  </select>                  
                 </div>
+                
 
                 <div class="col-md-12">
                   <label for="tipo">Tipo de Evento:</label>
                   <select id="tipo" name="tipo">
-                    <option value="a">Aniversário</option>
-                    <option value="f">Formatura</option>
-                    <option value="r">Reunião</option>
-                    <option value="o">Outros</option>
+                    <option value="A">Aniversário</option>
+                    <option value="F">Formatura</option>
+                    <option value="R">Reunião</option>
+                    <option value="O">Outros</option>
                   </select>                  
                 </div>
 
@@ -140,7 +199,7 @@
                 <!-- Nesse preço total, o calculo vai ser feito baseado na datahora inicial e final do evento,
                 cada diária vai multiplicar pelo preço contido no cadastro do espaço -->
                 <div class="col-md-12">
-                  <input type="text" name="precoTotal" class="form-control" placeholder="Preço Total" readonly>
+                  <input type="text" name="precoTotal" class="form-control" placeholder="Preço Total">
                 </div>
 
                 <!-- <div class="col-md-12">
@@ -148,9 +207,9 @@
                 </div> -->
 
                 <div class="col-md-12 text-center">
-                  <div class="loading">Carregando</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Sua requisição foi processada com sucesso!</div>
+                  <?php
+                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
+                  ?>
 
                   <button type="submit">Salvar</button>
                 </div>
@@ -237,7 +296,6 @@
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
