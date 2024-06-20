@@ -38,7 +38,7 @@ if (isset($_POST['nome']) &&
     // verifica se a query foi executada com sucesso
 
     if ($pdo->rowCount() == 1) {
-        $mensagem = "Usuário inserida com sucesso!";
+        $mensagem = "Usuário inserido com sucesso!";
     } else {
         $mensagem = "Erro ao inserir usuário!";
     }
