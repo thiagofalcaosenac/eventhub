@@ -93,17 +93,20 @@
 
         <div class="row gy-4">
 
-        <?php  
-          $colors = array("red", "green", "sdasda"); 
+        <?php           
+        include("./config/connection.php");
 
-          foreach ($colors as $x) {
+        $data = $pdo->query("SELECT nome_imagem, tipo_imagem, foto, nome, descricao FROM espacos")->fetchAll();
+        
+        foreach ($data as $row) {
             echo "<div class='col-lg-4 col-md-6' data-aos='fade-up' data-aos-delay='100'>";
             echo "<div class='card'>";
             echo "<div class='card-img'>";
-            echo "<img src='assets/img/service-1.jpg' alt='' class='img-fluid'>";
+            // echo "<img src='assets/img/service-1.jpg' alt='' class='img-fluid'>";
+           
             echo "</div>";
-            echo "<h3>Storage</h3>";
-            echo "<p>Cumque eos in qui numquam. Aut aspernatur perferendis sed atque quia voluptas quisquam repellendus temporibus itaqueofficiis odit</p>";
+            echo "<h3>" . $row['nome'] . "</h3>";
+            echo "<p> Descrição: " . $row['descricao'] . "</p>";
             echo "</div>";
             echo "</div>";
           }
