@@ -9,7 +9,7 @@ try {
       ) {
 
       // inclui o arquivo de conexão com o banco de dados
-      include("./config/connection.php");
+      require_once("./config/connection.php");
 
       // recebe os valores do formulário em variáveis locais
       $classificacao = $_POST['classificacao'];
@@ -32,6 +32,7 @@ try {
 
       if ($pdo->rowCount() == 1) {
           $mensagem = "Avaliação inserida com sucesso!";
+          header("Location: avaliacoes.php");
       } else {
           $mensagem = "Erro ao inserir avaliação!";
       }
@@ -77,7 +78,7 @@ try {
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto">
+      <a href="index.php" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="assets/img/logo.png" alt=""> -->
         <h1 class="sitename">EventHub</h1>
@@ -85,7 +86,7 @@ try {
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="index.html">Home<br></a></li>
+          <li><a href="index.php">Home<br></a></li>
           <li><a href="usuario.php">Usuário</a></li>
           <li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
@@ -111,7 +112,7 @@ try {
         <p>Nesta tela é possível realizar a manipulação de dados da avaliação</p>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="index.html">Home</a></li>
+            <li><a href="index.php">Home</a></li>
             <li class="current">Tela de Avaliações</li>
           </ol>
         </nav>
@@ -128,7 +129,7 @@ try {
           <div class="col-lg-5 quote-bg" style="background-image: url(assets/img/quote-bg.jpg);"></div>
 
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-            <form action="" method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
+            <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
               <!-- Avaliação - id (PK), classificacao, comentario, id_usuario(FK), id_espaco(FK) -->
 
               <div class="row gy-4">
@@ -150,12 +151,20 @@ try {
                 </div>
 
                 <!-- Aqui vai carregar os espaços cadastrados existentes no sistema. -->
+
                 <div class="col-md-12">
                   <label for="id_espaco">Espaço:</label>
                   <select id="id_espaco" name="id_espaco">
-                    <option value="1">Espaço 1</option>
-                    <option value="2">Espaço 2</option>
-                    <option value="3">Espaço 3</option>
+                  <?php
+                    require_once('./config/connection.php');
+
+                    $data = $pdo->prepare('SELECT * FROM espacos');
+                    $data->execute();
+
+                    while ($row = $data->fetch()) {
+                      echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['descricao'] . "</option>";
+                    }
+                  ?>
                   </select>
                 </div>
 
@@ -184,7 +193,7 @@ try {
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-5 col-md-12 footer-about">
-          <a href="index.html" class="logo d-flex align-items-center">
+          <a href="index.php" class="logo d-flex align-items-center">
             <span class="sitename">Marketplace para Divulgação de Espaços para Eventos</span>
           </a>
           <p>

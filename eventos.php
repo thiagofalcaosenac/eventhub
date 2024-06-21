@@ -8,8 +8,7 @@ try {
       isset($_POST['dataHoraFinal']) && 
       isset($_POST['status']) &&
       isset($_POST['tipo']) && 
-      isset($_POST['id_espaco']) &&
-      isset($_POST['precoTotal'])
+      isset($_POST['id_espaco']))
       ) {
 
       // inclui o arquivo de conexão com o banco de dados
@@ -47,6 +46,7 @@ try {
 
       if ($pdo->rowCount() == 1) {
           $mensagem = "Evento inserido com sucesso!";
+          header("Location: eventos.php");
       } else {
           $mensagem = "Erro ao inserir evento!";
       }
@@ -91,7 +91,7 @@ try {
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto">
+      <a href="index.php" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="assets/img/logo.png" alt=""> -->
         <h1 class="sitename">EventHub</h1>
@@ -99,7 +99,7 @@ try {
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="index.html">Home<br></a></li>
+          <li><a href="index.php">Home<br></a></li>
           <li><a href="usuario.php">Usuário</a></li>
           <li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
@@ -125,7 +125,7 @@ try {
         <p>Nesta tela é possível realizar a manipulação dos dados do evento</p>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="index.html">Home</a></li>
+            <li><a href="index.php">Home</a></li>
             <li class="current">Tela de Eventos</li>
           </ol>
         </nav>
@@ -173,7 +173,7 @@ try {
 
                 <div class="col-md-12">
                   <label for="status">Status:</label>
-                  <select id="status" name="status">
+                  <select id="status" name="status" disabled>
                     <option value="A">Aberto</option>
                     <option value="F">Finalizado</option>
                   </select>                  
@@ -194,21 +194,24 @@ try {
                 <div class="col-md-12">
                   <label for="id_espaco">Espaço:</label>
                   <select id="id_espaco" name="id_espaco">
-                    <option value="1">Espaço 1</option>
-                    <option value="2">Espaço 2</option>
-                    <option value="3">Espaço 3</option>
-                  </select>                  
-                </div>                
+                  <?php
+                    require_once('./config/connection.php');
+
+                    $data = $pdo->prepare('SELECT * FROM espacos');
+                    $data->execute();
+
+                    while ($row = $data->fetch()) {
+                      echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['descricao'] . "</option>";
+                    }
+                  ?>
+                  </select>
+                </div>
 
                 <!-- Nesse preço total, o calculo vai ser feito baseado na datahora inicial e final do evento,
                 cada diária vai multiplicar pelo preço contido no cadastro do espaço -->
                 <div class="col-md-12">
-                  <input type="text" name="precoTotal" class="form-control" placeholder="Preço Total">
+                  <input type="text" name="precoTotal" class="form-control" placeholder="Preço Total" disabled>
                 </div>
-
-                <!-- <div class="col-md-12">
-                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
-                </div> -->
 
                 <div class="col-md-12 text-center">
                   <?php
@@ -235,7 +238,7 @@ try {
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-5 col-md-12 footer-about">
-          <a href="index.html" class="logo d-flex align-items-center">
+          <a href="index.php" class="logo d-flex align-items-center">
             <span class="sitename">Marketplace para Divulgação de Espaços para Eventos</span>
           </a>
           <p>

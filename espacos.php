@@ -20,18 +20,9 @@ try {
       $preco = $_POST['preco'];
       $comodidades = $_POST['comodidades'];
 
-      // $imagem = $_FILES['foto']['tmp_name'];
       $tamanho_imagem = $_FILES['foto']['size'];
       $tipo_imagem = $_FILES['foto']['type'];
       $nome_foto = $_FILES['foto']['name'];
-
-      // if ( $imagem != "none" )
-      // {
-      //   $fp = fopen($imagem, "rb");
-      //   $conteudo = fread($fp, $tamanho_imagem);
-      //   $conteudo = addslashes($conteudo);
-      //   fclose($fp);
-      // }
 
       $fp = fopen($_FILES['foto']['tmp_name'], 'rb');
 
@@ -106,7 +97,7 @@ try {
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto">
+      <a href="index.php" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="assets/img/logo.png" alt=""> -->
         <h1 class="sitename">EventHub</h1>
@@ -114,7 +105,7 @@ try {
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="index.html">Home<br></a></li>
+          <li><a href="index.php">Home<br></a></li>
           <li><a href="usuario.php">Usuário</a></li>
           <li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
@@ -140,7 +131,7 @@ try {
         <p>Nesta tela é possível fazer a manipulação de dados do espaço</p>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="index.html">Home</a></li>
+            <li><a href="index.php">Home</a></li>
             <li class="current">Tela de Espaços</li>
           </ol>
         </nav>
@@ -223,7 +214,7 @@ try {
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-5 col-md-12 footer-about">
-          <a href="index.html" class="logo d-flex align-items-center">
+          <a href="index.php" class="logo d-flex align-items-center">
             <span class="sitename">Marketplace para Divulgação de Espaços para Eventos</span>
           </a>
           <p>

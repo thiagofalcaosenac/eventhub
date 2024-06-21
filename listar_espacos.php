@@ -33,7 +33,7 @@
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-      <a href="index.html" class="logo d-flex align-items-center me-auto">
+      <a href="index.php" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="assets/img/logo.png" alt=""> -->
         <h1 class="sitename">EventHub</h1>
@@ -41,7 +41,7 @@
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="index.html">Home<br></a></li>
+          <li><a href="index.php">Home<br></a></li>
           <li><a href="usuario.php">Usuário</a></li>
           <li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
@@ -67,7 +67,7 @@
         <p>Segue abaixo a listagem de espaços disponíveis</p>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="index.html">Home</a></li>
+            <li><a href="index.php">Home</a></li>
             <li class="current">Listagem dos Espaços</li>
           </ol>
         </nav>
@@ -95,38 +95,25 @@
 
         <?php           
           try {
-            include("./config/connection.php");
+              require_once './config/connection.php';
 
-            $stmt = $pdo->prepare("select tipo_imagem, foto from espacos");
-            $stmt->execute();
-            $stmt->bindColumn(1, $type, PDO::PARAM_STR, 256);
-            $stmt->bindColumn(2, $lob, PDO::PARAM_LOB);
-            $stmt->fetch(PDO::FETCH_BOUND);
-            
-            header("Content-Type: $type");
-            fpassthru($lob);
-          } catch (Exception $e) {
-            echo 'Exceção capturada: ',  $e->getMessage(), "\n";
-          }
+              $data = $pdo->prepare('SELECT * FROM espacos');
+              $data->execute();
 
-          // $data = $pdo->prepare('SELECT * FROM espacos');
-          // $data->execute();
-
-          // while ($row = $data->fetch()) {
-          //     echo "<div class='col-lg-4 col-md-6' data-aos='fade-up' data-aos-delay='100'>";
-          //     echo "<div class='card'>";
-          //     echo "<div class='card-img'>";
-          //     // echo "<img src='assets/img/service-1.jpg' alt='' class='img-fluid'>";
-          //     header("Content-Type: image/jpeg");
-          //     echo '<img src="data:image/jpeg;base64,'.base64_encode($row['foto']).'"/>';
-
-          //     echo "</div>";
-          //     echo "<h3>" . $row['nome'] . "</h3>";
-          //     echo "<p> Descrição: " . $row['descricao'] . "</p>";
-          //     echo "</div>";
-          //     echo "</div>";
-          //   }
-
+              while ($row = $data->fetch()) {
+                echo "<div class='col-lg-4 col-md-6' data-aos='fade-up' data-aos-delay='100'>";
+                echo "<div class='card'>";
+                echo "<div class='card-img' style='width: 414px !important; height: 276px !important;'>";
+                echo '<img class="img-fluid" src="data:image/jpeg;base64,'.base64_encode($row['foto']).'" width="414px" height="276px" />';
+                echo "</div>";
+                echo "<h3>" . $row['nome'] . "</h3>";
+                echo "<p> Descrição: " . $row['descricao'] . "</p>";
+                echo "</div>";
+                echo "</div>";
+              }
+            } catch (Exception $e) {
+              echo 'Exceção capturada: ',  $e->getMessage(), "\n";
+            }
         ?>
 
         </div>
@@ -142,7 +129,7 @@
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-5 col-md-12 footer-about">
-          <a href="index.html" class="logo d-flex align-items-center">
+          <a href="index.php" class="logo d-flex align-items-center">
             <span class="sitename">Marketplace para Divulgação de Espaços para Eventos</span>
           </a>
           <p>
