@@ -1,65 +1,73 @@
 <?php
 
-if (isset($_POST['nome']) && 
-    isset($_POST['descricao']) && 
-    isset($_POST['capacidade']) &&
-    isset($_POST['endereco']) && 
-    isset($_POST['preco']) &&
-    isset($_POST['comodidades'])) {
+try {
 
-    // inclui o arquivo de conexão com o banco de dados
-    include("./config/connection.php");
+  if (isset($_POST['nome']) && 
+      isset($_POST['descricao']) && 
+      isset($_POST['capacidade']) &&
+      isset($_POST['endereco']) && 
+      isset($_POST['preco']) &&
+      isset($_POST['comodidades'])) {
 
-    // recebe os valores do formulário em variáveis locais
-    $nome = $_POST['nome'];
-    $descricao = $_POST['descricao'];
-    $capacidade = $_POST['capacidade'];
-    $endereco = $_POST['endereco'];
-    $preco = $_POST['preco'];
-    $comodidades = $_POST['comodidades'];
+      // inclui o arquivo de conexão com o banco de dados
+      include("./config/connection.php");
 
-    $imagem = $_FILES['foto']['tmp_name'];
-    $tamanho_imagem = $_FILES['foto']['size'];
-    $tipo_imagem = $_FILES['foto']['type'];
-    $nome_foto = $_FILES['foto']['name'];
+      // recebe os valores do formulário em variáveis locais
+      $nome = $_POST['nome'];
+      $descricao = $_POST['descricao'];
+      $capacidade = $_POST['capacidade'];
+      $endereco = $_POST['endereco'];
+      $preco = $_POST['preco'];
+      $comodidades = $_POST['comodidades'];
 
-    if ( $imagem != "none" )
-    {
-      $fp = fopen($imagem, "rb");
-      $conteudo = fread($fp, $tamanho_imagem);
-      $conteudo = addslashes($conteudo);
+      // $imagem = $_FILES['foto']['tmp_name'];
+      $tamanho_imagem = $_FILES['foto']['size'];
+      $tipo_imagem = $_FILES['foto']['type'];
+      $nome_foto = $_FILES['foto']['name'];
+
+      // if ( $imagem != "none" )
+      // {
+      //   $fp = fopen($imagem, "rb");
+      //   $conteudo = fread($fp, $tamanho_imagem);
+      //   $conteudo = addslashes($conteudo);
+      //   fclose($fp);
+      // }
+
+      $fp = fopen($_FILES['foto']['tmp_name'], 'rb');
+
+      // cria a query de inserção no banco de dados
+      $sql = "INSERT INTO espacos (nome,descricao,capacidade,endereco,preco,comodidades, nome_imagem, tamanho_imagem, tipo_imagem, foto, id_usuario) 
+              VALUES (:nome,:descricao,:capacidade,:endereco,:preco,:comodidades, :nome_foto, :tamanho_imagem, :tipo_imagem, :imagem, 1)";
+      // prepara a query para ser executada
+      $pdo = $pdo->prepare($sql);
+
+      // substitui os parâmetros da query
+      $pdo->bindParam(":nome", $nome);
+      $pdo->bindParam(":descricao", $descricao);
+      $pdo->bindParam(":capacidade", $capacidade);
+      $pdo->bindParam(":endereco", $endereco);
+      $pdo->bindParam(":preco", $preco);
+      $pdo->bindParam(":comodidades", $comodidades);
+
+      $pdo->bindParam(":nome_foto", $nome_foto);
+      $pdo->bindParam(":tamanho_imagem", $tamanho_imagem);
+      $pdo->bindParam(":tipo_imagem", $tipo_imagem);
+      $pdo->bindParam(":imagem", $fp, PDO::PARAM_LOB);
+
+      // executa a query
+      $pdo->execute();
       fclose($fp);
-    }
+      // verifica se a query foi executada com sucesso
 
-    // cria a query de inserção no banco de dados
-    $sql = "INSERT INTO espacos (nome,descricao,capacidade,endereco,preco,comodidades, nome_imagem, tamanho_imagem, tipo_imagem, foto) 
-            VALUES (:nome,:descricao,:capacidade,:endereco,:preco,:comodidades, :nome_foto, :tamanho_imagem, :tipo_imagem, :conteudo)";
-    // prepara a query para ser executada
-    $pdo = $pdo->prepare($sql);
-
-    // substitui os parâmetros da query
-    $pdo->bindParam(":nome", $nome);
-    $pdo->bindParam(":descricao", $descricao);
-    $pdo->bindParam(":capacidade", $capacidade);
-    $pdo->bindParam(":endereco", $endereco);
-    $pdo->bindParam(":preco", $preco);
-    $pdo->bindParam(":comodidades", $comodidades);
-
-    $pdo->bindParam(":nome_foto", $nome_foto);
-    $pdo->bindParam(":tamanho_imagem", $tamanho_imagem);
-    $pdo->bindParam(":tipo_imagem", $tipo_imagem);
-    $pdo->bindParam(":conteudo", $conteudo);
-
-    // executa a query
-    $pdo->execute();
-    // verifica se a query foi executada com sucesso
-
-    if ($pdo->rowCount() == 1) {
-        $mensagem = "Espaço inserido com sucesso!";
-        // header("Location: list_disciplina.php");
-    } else {
-        $mensagem = "Erro ao inserir espaço!";
-    }
+      if ($pdo->rowCount() == 1) {
+          $mensagem = "Espaço inserido com sucesso!";
+          // header("Location: list_disciplina.php");
+      } else {
+          $mensagem = "Erro ao inserir espaço!";
+      }
+  }
+} catch (Exception $e) {
+  echo 'Exceção capturada: ',  $e->getMessage(), "\n";
 }
 
 ?>

@@ -94,22 +94,39 @@
         <div class="row gy-4">
 
         <?php           
-        include("./config/connection.php");
+          try {
+            include("./config/connection.php");
 
-        $data = $pdo->query("SELECT nome_imagem, tipo_imagem, foto, nome, descricao FROM espacos")->fetchAll();
-        
-        foreach ($data as $row) {
-            echo "<div class='col-lg-4 col-md-6' data-aos='fade-up' data-aos-delay='100'>";
-            echo "<div class='card'>";
-            echo "<div class='card-img'>";
-            // echo "<img src='assets/img/service-1.jpg' alt='' class='img-fluid'>";
-           
-            echo "</div>";
-            echo "<h3>" . $row['nome'] . "</h3>";
-            echo "<p> Descrição: " . $row['descricao'] . "</p>";
-            echo "</div>";
-            echo "</div>";
+            $stmt = $pdo->prepare("select tipo_imagem, foto from espacos");
+            $stmt->execute();
+            $stmt->bindColumn(1, $type, PDO::PARAM_STR, 256);
+            $stmt->bindColumn(2, $lob, PDO::PARAM_LOB);
+            $stmt->fetch(PDO::FETCH_BOUND);
+            
+            header("Content-Type: $type");
+            fpassthru($lob);
+          } catch (Exception $e) {
+            echo 'Exceção capturada: ',  $e->getMessage(), "\n";
           }
+
+          // $data = $pdo->prepare('SELECT * FROM espacos');
+          // $data->execute();
+
+          // while ($row = $data->fetch()) {
+          //     echo "<div class='col-lg-4 col-md-6' data-aos='fade-up' data-aos-delay='100'>";
+          //     echo "<div class='card'>";
+          //     echo "<div class='card-img'>";
+          //     // echo "<img src='assets/img/service-1.jpg' alt='' class='img-fluid'>";
+          //     header("Content-Type: image/jpeg");
+          //     echo '<img src="data:image/jpeg;base64,'.base64_encode($row['foto']).'"/>';
+
+          //     echo "</div>";
+          //     echo "<h3>" . $row['nome'] . "</h3>";
+          //     echo "<p> Descrição: " . $row['descricao'] . "</p>";
+          //     echo "</div>";
+          //     echo "</div>";
+          //   }
+
         ?>
 
         </div>

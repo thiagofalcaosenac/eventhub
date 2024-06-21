@@ -1,54 +1,58 @@
 <?php
 
-// verifica se os campos foram preenchidos e se o formulário foi enviado
-if (isset($_POST['titulo']) && 
-    isset($_POST['descricao']) && 
-    isset($_POST['dataHoraInicial']) &&
-    isset($_POST['dataHoraFinal']) && 
-    isset($_POST['status']) &&
-    isset($_POST['tipo']) && 
-    isset($_POST['id_espaco']) &&
-    isset($_POST['precoTotal'])
-    ) {
+try {
+  // verifica se os campos foram preenchidos e se o formulário foi enviado
+  if (isset($_POST['titulo']) && 
+      isset($_POST['descricao']) && 
+      isset($_POST['dataHoraInicial']) &&
+      isset($_POST['dataHoraFinal']) && 
+      isset($_POST['status']) &&
+      isset($_POST['tipo']) && 
+      isset($_POST['id_espaco']) &&
+      isset($_POST['precoTotal'])
+      ) {
 
-    // inclui o arquivo de conexão com o banco de dados
-    include("./config/connection.php");
+      // inclui o arquivo de conexão com o banco de dados
+      include("./config/connection.php");
 
-    // recebe os valores do formulário em variáveis locais
-    $titulo = $_POST['titulo'];
-    $descricao = $_POST['descricao'];
-    $dataHoraInicial = $_POST['dataHoraInicial'];
-    $dataHoraFinal = $_POST['dataHoraFinal'];
-    $status = $_POST['status'];
-    $tipo = $_POST['tipo'];
-    $id_espaco = $_POST['id_espaco'];
-    $precoTotal = $_POST['precoTotal'];
+      // recebe os valores do formulário em variáveis locais
+      $titulo = $_POST['titulo'];
+      $descricao = $_POST['descricao'];
+      $dataHoraInicial = $_POST['dataHoraInicial'];
+      $dataHoraFinal = $_POST['dataHoraFinal'];
+      $status = $_POST['status'];
+      $tipo = $_POST['tipo'];
+      $id_espaco = $_POST['id_espaco'];
+      $precoTotal = $_POST['precoTotal'];
 
-    // cria a query de inserção no banco de dados
-    $sql = "INSERT INTO eventos (titulo,descricao,data_hora_inicial,data_hora_final,status,tipo,id_espaco,preco_total) 
-    VALUES (:titulo,:descricao,:dataHoraInicial,:dataHoraFinal,:status,:tipo,:id_espaco,:precoTotal)";
-    // prepara a query para ser executada
-    $pdo = $pdo->prepare($sql);
+      // cria a query de inserção no banco de dados
+      $sql = "INSERT INTO eventos (titulo,descricao,data_hora_inicial,data_hora_final,status,tipo,id_espaco,preco_total, id_usuario) 
+      VALUES (:titulo,:descricao,:dataHoraInicial,:dataHoraFinal,:status,:tipo,:id_espaco,:precoTotal, 1)";
+      // prepara a query para ser executada
+      $pdo = $pdo->prepare($sql);
 
-    // substitui os parâmetros da query
-    $pdo->bindParam(":titulo", $titulo);
-    $pdo->bindParam(":descricao", $descricao);
-    $pdo->bindParam(":dataHoraInicial", $dataHoraInicial);
-    $pdo->bindParam(":dataHoraFinal", $dataHoraFinal);
-    $pdo->bindParam(":status", $status);
-    $pdo->bindParam(":tipo", $tipo);
-    $pdo->bindParam(":id_espaco", $id_espaco);
-    $pdo->bindParam(":precoTotal", $precoTotal);
+      // substitui os parâmetros da query
+      $pdo->bindParam(":titulo", $titulo);
+      $pdo->bindParam(":descricao", $descricao);
+      $pdo->bindParam(":dataHoraInicial", $dataHoraInicial);
+      $pdo->bindParam(":dataHoraFinal", $dataHoraFinal);
+      $pdo->bindParam(":status", $status);
+      $pdo->bindParam(":tipo", $tipo);
+      $pdo->bindParam(":id_espaco", $id_espaco);
+      $pdo->bindParam(":precoTotal", $precoTotal);
 
-    // executa a query
-    $pdo->execute();
-    // verifica se a query foi executada com sucesso
+      // executa a query
+      $pdo->execute();
+      // verifica se a query foi executada com sucesso
 
-    if ($pdo->rowCount() == 1) {
-        $mensagem = "Evento inserido com sucesso!";
-    } else {
-        $mensagem = "Erro ao inserir evento!";
-    }
+      if ($pdo->rowCount() == 1) {
+          $mensagem = "Evento inserido com sucesso!";
+      } else {
+          $mensagem = "Erro ao inserir evento!";
+      }
+  }
+} catch (Exception $e) {
+  echo 'Exceção capturada: ',  $e->getMessage(), "\n";
 }
 
 ?>

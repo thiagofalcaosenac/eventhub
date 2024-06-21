@@ -1,39 +1,44 @@
 <?php
 
-// verifica se os campos foram preenchidos e se o formulário foi enviado
-if (isset($_POST['classificacao']) && 
-    isset($_POST['comentario']) && 
-    isset($_POST['id_espaco'])
-    ) {
+try {
 
-    // inclui o arquivo de conexão com o banco de dados
-    include("./config/connection.php");
+  // verifica se os campos foram preenchidos e se o formulário foi enviado
+  if (isset($_POST['classificacao']) && 
+      isset($_POST['comentario']) && 
+      isset($_POST['id_espaco'])
+      ) {
 
-    // recebe os valores do formulário em variáveis locais
-    $classificacao = $_POST['classificacao'];
-    $comentario = $_POST['comentario'];
-    $id_espaco = $_POST['id_espaco'];
+      // inclui o arquivo de conexão com o banco de dados
+      include("./config/connection.php");
 
-    // cria a query de inserção no banco de dados
-    $sql = "INSERT INTO avaliacao (classificacao,comentario,id_espaco) 
-    VALUES (:classificacao,:comentario,:id_espaco)";
-    // prepara a query para ser executada
-    $pdo = $pdo->prepare($sql);
+      // recebe os valores do formulário em variáveis locais
+      $classificacao = $_POST['classificacao'];
+      $comentario = $_POST['comentario'];
+      $id_espaco = $_POST['id_espaco'];
 
-    // substitui os parâmetros da query
-    $pdo->bindParam(":classificacao", $classificacao);
-    $pdo->bindParam(":comentario", $comentario);
-    $pdo->bindParam(":id_espaco", $id_espaco);
+      // cria a query de inserção no banco de dados
+      $sql = "INSERT INTO avaliacao (classificacao,comentario,id_espaco, id_usuario) VALUES (:classificacao,:comentario,:id_espaco,1)";
+      // prepara a query para ser executada
+      $pdo = $pdo->prepare($sql);
 
-    // executa a query
-    $pdo->execute();
-    // verifica se a query foi executada com sucesso
+      // substitui os parâmetros da query
+      $pdo->bindParam(":classificacao", $classificacao);
+      $pdo->bindParam(":comentario", $comentario);
+      $pdo->bindParam(":id_espaco", $id_espaco);
+      
+      // executa a query
+      $pdo->execute();
+      // verifica se a query foi executada com sucesso
 
-    if ($pdo->rowCount() == 1) {
-        $mensagem = "Avaliação inserida com sucesso!";
-    } else {
-        $mensagem = "Erro ao inserir avaliação!";
-    }
+      if ($pdo->rowCount() == 1) {
+          $mensagem = "Avaliação inserida com sucesso!";
+      } else {
+          $mensagem = "Erro ao inserir avaliação!";
+      }
+  }
+
+} catch (Exception $e) {
+  echo 'Exceção capturada: ',  $e->getMessage(), "\n";
 }
 
 ?>
