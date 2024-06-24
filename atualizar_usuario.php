@@ -1,72 +1,68 @@
 <?php
 
-session_start();
-$perfil = $_SESSION['perfil'];
+  try {
+    session_start();
+    $perfil = $_SESSION['perfil'];
 
-try {
     // inclui o arquivo de conexão com o banco de dados
     include("./config/connection.php");
 
     if (isset($_GET['idUsuario'])) {
       $idUsuario = $_GET['idUsuario'];
-    } else {
-      // se não foi enviado, redireciona para a página de listagem
-      header("Location: index.php");
-      exit();
     }
 
-  // verifica se os campos foram preenchidos e se o formulário foi enviado
-  if (isset($_POST['nome']) && 
-      isset($_POST['email']) && 
-      isset($_POST['senha']) &&
-      isset($_POST['telefone']) && 
-      isset($_POST['endereco']) &&
-      isset($_POST['tipo'])
-      ) {
+    // verifica se os campos foram preenchidos e se o formulário foi enviado
+    if (isset($_POST['nome']) && 
+        isset($_POST['email']) && 
+        isset($_POST['senha']) &&
+        isset($_POST['telefone']) && 
+        isset($_POST['endereco']) &&
+        isset($_POST['tipo'])
+        ) {
 
-      // recebe os valores do formulário em variáveis locais
-      $nome = $_POST['nome'];
-      $email = $_POST['email'];
-      $senha = $_POST['senha'];
-      $telefone = $_POST['telefone'];
-      $endereco = $_POST['endereco'];
-      $tipo = $_POST['tipo'];
-      
-      // cria a query de inserção no banco de dados
-      $sql = "UPDATE usuario 
-              SET nome = :nome, email = :email, senha = :senha, telefone = :telefone, endereco = :endereco, tipo = :tipo
-              WHERE id = :idUsuario";
-      // prepara a query para ser executada
-      $pdo = $pdo->prepare($sql);
+        // recebe os valores do formulário em variáveis locais
+        $nome = $_POST['nome'];
+        $email = $_POST['email'];
+        $senha = $_POST['senha'];
+        $telefone = $_POST['telefone'];
+        $endereco = $_POST['endereco'];
+        $tipo = $_POST['tipo'];
+        
+        // cria a query de inserção no banco de dados
+        $sql = "UPDATE usuario 
+                SET nome = :nome, email = :email, senha = :senha, telefone = :telefone, endereco = :endereco, tipo = :tipo
+                WHERE id = :idUsuario";
+        // prepara a query para ser executada
+        $pdo = $pdo->prepare($sql);
 
-      // substitui os parâmetros da query
-      $pdo->bindParam(":nome", $nome);
-      $pdo->bindParam(":email", $email);
-      $pdo->bindParam(":senha", $senha);
-      $pdo->bindParam(":telefone", $telefone);
-      $pdo->bindParam(":endereco", $endereco);
-      $pdo->bindParam(":tipo", $tipo);
-      $pdo->bindParam(":idUsuario", $idUsuario);
+        // substitui os parâmetros da query
+        $pdo->bindParam(":nome", $nome);
+        $pdo->bindParam(":email", $email);
+        $pdo->bindParam(":senha", $senha);
+        $pdo->bindParam(":telefone", $telefone);
+        $pdo->bindParam(":endereco", $endereco);
+        $pdo->bindParam(":tipo", $tipo);
+        $pdo->bindParam(":idUsuario", $idUsuario);
 
-      // executa a query
-      $pdo->execute();
-      // verifica se a query foi executada com sucesso
+        // executa a query
+        $pdo->execute();
+        // verifica se a query foi executada com sucesso
 
-      if ($pdo->rowCount() == 1) {
-        //$_SESSION['perfil'] = $tipo;
-        header("Location: index.php");
-      } else {
-        $mensagem = "Erro ao atualizar usuário!";
-      }
+        if ($pdo->rowCount() == 1) {
+          $_SESSION['perfil'] = $tipo;
+          header("Location: index.php");
+        } else {
+          $mensagem = "Erro ao atualizar usuário!";
+        }
+    }
+
+    $sqlBusca = "SELECT * FROM usuario WHERE id = $idUsuario";
+    $resultado = $pdo->query($sqlBusca);
+    $resultado = $resultado->fetch(PDO::FETCH_ASSOC);
+
+  } catch (Exception $e) {
+    echo 'Exceção capturada: ',  $e->getMessage(), "\n";
   }
-
-  $sqlBusca = "SELECT * FROM usuario WHERE id = $idUsuario";
-  $resultado = $pdo->query($sqlBusca);
-  $resultado = $resultado->fetch(PDO::FETCH_ASSOC);
-
-} catch (Exception $e) {
-  echo 'Exceção capturada: ',  $e->getMessage(), "\n";
-}
 
 ?>
 <!DOCTYPE html>

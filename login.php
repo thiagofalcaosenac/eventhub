@@ -140,7 +140,7 @@ try {
                 <div class="col-md-12 text-center">
 
                 <div>
-                  <p class="mb-0">Não tem uma conta? <a href="usuario.html" class="text-black-50 fw-bold">Registre-se!</a>
+                  <p class="mb-0">Não tem uma conta? <a href="usuario.php" class="text-black-50 fw-bold">Registre-se!</a>
                   </p>
                 </div>
     

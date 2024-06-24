@@ -77,7 +77,11 @@ $perfil = $_SESSION['perfil'];
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <a class="btn-getstarted" href="login.php">Acessar</a>
+      <?php
+        if (!(isset($idUsuario))) {
+          echo '<a class="btn-getstarted" href="login.php">Acessar</a>';
+        }
+      ?>
     </div>
   </header>
 
