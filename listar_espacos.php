@@ -80,6 +80,13 @@ $perfil = $_SESSION['perfil'];
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
+
+      <?php
+        if (!(isset($idUsuario))) {
+          echo '<a class="btn-getstarted" href="login.php">Acessar</a>';
+        }
+      ?>
+
     </div>
   </header>
 
@@ -112,7 +119,7 @@ $perfil = $_SESSION['perfil'];
       <div class="container">
 
         <form action="#" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
-          <input type="text" class="form-control" placeholder="Informe o endereço do local desejado">
+          <input type="text" class="form-control" name="filtro" id="filtro" placeholder="Informe o endereço do local desejado">
           <button type="submit" class="btn btn-primary">Buscar</button>
         </form>
 
@@ -121,6 +128,9 @@ $perfil = $_SESSION['perfil'];
         <?php           
           try {
               require_once './config/connection.php';
+
+              $filtro = $_POST['filtro'];
+              echo ($filtro);
 
               $data = $pdo->prepare('SELECT * FROM espacos');
               $data->execute();
@@ -131,12 +141,16 @@ $perfil = $_SESSION['perfil'];
                 echo "<div class='card-img'>";
                 echo '<img class="img-fluid" src="data:image/jpeg;base64,'.base64_encode($row['foto']).'" />';
                 echo "</div>";
-                if (isset($perfil) && $perfil == 'L') {
+                if (!(isset($idUsuario))) {
                   echo "<h3>" . $row['nome'] . "</h3>";
                 } else {
-                  echo "<a href='atualizar_espaco.php?idEspaco=" . $row['id'] . "'>";
-                  echo "<h3><i class='glyphicon glyphicon-edit'>" . $row['nome'] . "</i></h3>";
-                  echo '</a>';
+                  if (isset($perfil) && $perfil == 'L') {
+                    echo "<h3>" . $row['nome'] . "</h3>"; 
+                  } else {
+                    echo "<a href='atualizar_espaco.php?idEspaco=" . $row['id'] . "'>";
+                    echo "<h3><i class='glyphicon glyphicon-edit'>" . $row['nome'] . "</i></h3>";
+                    echo '</a>';
+                  }
                 }
                 echo "<p> Descrição: " . $row['descricao'] . "</p>";
                 echo "</div>";

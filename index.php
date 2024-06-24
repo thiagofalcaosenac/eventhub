@@ -1,7 +1,11 @@
 <?php
-session_start();
-$idUsuario = $_SESSION['idUsuario'];
-$perfil = $_SESSION['perfil'];
+try {
+  session_start();
+  $idUsuario = $_SESSION['idUsuario'];
+  $perfil = $_SESSION['perfil'];
+} catch (Exception $e) {
+  echo 'Exceção capturada: ',  $e->getMessage(), "\n";
+}
 ?>
 
 <!DOCTYPE html>

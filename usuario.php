@@ -1,54 +1,57 @@
 <?php
+try {
+  session_start();
+  
+  $idDoUsuarioNaSessao = $_SESSION['idUsuario'];
+  $perfilDoUsuarioNaSessao = $_SESSION['perfil'];
+  echo "ID DO USUARIO NA SESSAO: " . $idDoUsuarioNaSessao . " VIU AQUI? </br>";
+  echo "PERFIL DO USUARIO NA SESSAO: " . $perfilDoUsuarioNaSessao . " VIU AQUI?";
 
-session_start();
-$idUsuario = $_SESSION['idUsuario'];
-$perfil = $_SESSION['perfil'];
+  // verifica se os campos foram preenchidos e se o formulário foi enviado
+  if (isset($_POST['nome']) && 
+      isset($_POST['email']) && 
+      isset($_POST['senha']) &&
+      isset($_POST['telefone']) && 
+      isset($_POST['endereco']) &&
+      isset($_POST['tipo'])
+      ) {
 
-// verifica se os campos foram preenchidos e se o formulário foi enviado
-if (isset($_POST['nome']) && 
-    isset($_POST['email']) && 
-    isset($_POST['senha']) &&
-    isset($_POST['telefone']) && 
-    isset($_POST['endereco']) &&
-    isset($_POST['tipo'])
-    ) {
+      // inclui o arquivo de conexão com o banco de dados
+      include("./config/connection.php");
 
-    // inclui o arquivo de conexão com o banco de dados
-    include("./config/connection.php");
+      $nome = $_POST['nome'];
+      $email = $_POST['email'];
+      $senha = $_POST['senha'];
+      $telefone = $_POST['telefone'];
+      $endereco = $_POST['endereco'];
+      $tipo = $_POST['tipo'];
+      
+      $sql = "INSERT INTO usuario (nome,email,senha,telefone,endereco,tipo) VALUES (:nome,:email,:senha,:telefone,:endereco,:tipo)";
+      $pdo = $pdo->prepare($sql);
 
-    // recebe os valores do formulário em variáveis locais
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $senha = $_POST['senha'];
-    $telefone = $_POST['telefone'];
-    $endereco = $_POST['endereco'];
-    $tipo = $_POST['tipo'];
-    
-    // cria a query de inserção no banco de dados
-    $sql = "INSERT INTO usuario (nome,email,senha,telefone,endereco,tipo) VALUES (:nome,:email,:senha,:telefone,:endereco,:tipo)";
-    // prepara a query para ser executada
-    $pdo = $pdo->prepare($sql);
+      $pdo->bindParam(":nome", $nome);
+      $pdo->bindParam(":email", $email);
+      $pdo->bindParam(":senha", $senha);
+      $pdo->bindParam(":telefone", $telefone);
+      $pdo->bindParam(":endereco", $endereco);
+      $pdo->bindParam(":tipo", $tipo);
+      $pdo->execute();
+      $pdo->commit();
 
-    // substitui os parâmetros da query
-    $pdo->bindParam(":nome", $nome);
-    $pdo->bindParam(":email", $email);
-    $pdo->bindParam(":senha", $senha);
-    $pdo->bindParam(":telefone", $telefone);
-    $pdo->bindParam(":endereco", $endereco);
-    $pdo->bindParam(":tipo", $tipo);
+      if ($pdo->rowCount() == 1) {
+        $lastId = $dbh->lastInsertId();
 
-    // executa a query
-    $pdo->execute();
-    // verifica se a query foi executada com sucesso
-
-    if ($pdo->rowCount() == 1) {
-        $_SESSION['idUsuario'] = $usuario['id'];
-        $_SESSION['perfil'] = $usuario['tipo'];
-        header("Location: index.php");
+        // $usuarioInserido = $pdo->fetch(PDO::FETCH_ASSOC);
+        $_SESSION['idUsuario'] = $lastId;
+        $_SESSION['perfil'] = $tipo;
+        //header("Location: index.php");
         $mensagem = "Usuário inserido com sucesso!";
-    } else {
+      } else {
         $mensagem = "Erro ao inserir usuário!";
-    }
+      }
+  }
+} catch (Exception $e) {
+  echo 'Exceção capturada: ',  $e->getMessage(), "\n";
 }
 
 ?>
@@ -128,7 +131,7 @@ if (isset($_POST['nome']) &&
           <div class="col-lg-5 quote-bg" style="background-image: url(assets/img/quote-bg.jpg);"></div>
 
           <div class="col-lg-7">
-            <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
+            <form action="" method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
               <!-- Usuário - id (PK), nome, email, senha, tipo, telefone, endereco, tipo (Enum Locador/Locatario) -->
 
               <div class="row gy-4">
@@ -175,7 +178,7 @@ if (isset($_POST['nome']) &&
 
                 <div class="col-md-12 text-center">
                     <?php
-                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
+                      echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
                     ?>
 
                   <button type="submit">Salvar</button>
