@@ -120,7 +120,7 @@ try {
           ?>
           
           <?php
-            if (isset($perfil) && $perfil == 'L') {
+            if ((isset($perfil) && $perfil == 'L') || (!(isset($idUsuario)))) {
               echo '<li><a href="listar_espacos.php">Espaços</a></li>';
             } else {
               echo '<li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
