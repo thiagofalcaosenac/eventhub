@@ -212,7 +212,7 @@ try {
 
                 <!-- APIKEU DO GOOGLE PARA O MAPA -> AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg -->
 
-                <!-- <div class="col-md-12 text-center">
+                <div class="col-md-12 text-center">
                   <iframe
                     width="450"
                     height="250"
@@ -221,7 +221,7 @@ try {
                     src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg&q=Eiffel+Tower,Paris+France"
                     allowfullscreen>
                   </iframe>
-                </div> -->
+                </div>
 
                 <div class="col-md-12 text-center">
                   <?php

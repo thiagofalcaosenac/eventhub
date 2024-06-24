@@ -1,11 +1,7 @@
 <?php
 try {
-  session_start();
-  
-  $idDoUsuarioNaSessao = $_SESSION['idUsuario'];
-  $perfilDoUsuarioNaSessao = $_SESSION['perfil'];
-  echo "ID DO USUARIO NA SESSAO: " . $idDoUsuarioNaSessao . " VIU AQUI? </br>";
-  echo "PERFIL DO USUARIO NA SESSAO: " . $perfilDoUsuarioNaSessao . " VIU AQUI?";
+  require_once("./Session.php");
+  Session::start();
 
   // verifica se os campos foram preenchidos e se o formulário foi enviado
   if (isset($_POST['nome']) && 
@@ -27,30 +23,32 @@ try {
       $tipo = $_POST['tipo'];
       
       $sql = "INSERT INTO usuario (nome,email,senha,telefone,endereco,tipo) VALUES (:nome,:email,:senha,:telefone,:endereco,:tipo)";
-      $pdo = $pdo->prepare($sql);
+      $statement = $pdo->prepare($sql);
 
-      $pdo->bindParam(":nome", $nome);
-      $pdo->bindParam(":email", $email);
-      $pdo->bindParam(":senha", $senha);
-      $pdo->bindParam(":telefone", $telefone);
-      $pdo->bindParam(":endereco", $endereco);
-      $pdo->bindParam(":tipo", $tipo);
-      $pdo->execute();
-      $pdo->commit();
+      $statement->bindParam(":nome", $nome);
+      $statement->bindParam(":email", $email);
+      $statement->bindParam(":senha", $senha);
+      $statement->bindParam(":telefone", $telefone);
+      $statement->bindParam(":endereco", $endereco);
+      $statement->bindParam(":tipo", $tipo);
+      $statement->execute();
 
-      if ($pdo->rowCount() == 1) {
-        $lastId = $dbh->lastInsertId();
+      if ($statement->rowCount() == 1) {
+        $lastId = $pdo->lastInsertId();
 
         // $usuarioInserido = $pdo->fetch(PDO::FETCH_ASSOC);
-        $_SESSION['idUsuario'] = $lastId;
-        $_SESSION['perfil'] = $tipo;
+        Session::set('eventhub', [
+          'idUsuario' => $lastId,
+          'perfil' => $tipo,
+        ]);
+
         //header("Location: index.php");
         $mensagem = "Usuário inserido com sucesso!";
       } else {
         $mensagem = "Erro ao inserir usuário!";
       }
   }
-} catch (Exception $e) {
+} catch (\Exception $e) {
   echo 'Exceção capturada: ',  $e->getMessage(), "\n";
 }
 
