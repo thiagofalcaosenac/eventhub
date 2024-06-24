@@ -1,9 +1,74 @@
 <?php
-session_start();
-$idUsuario = $_SESSION['idUsuario'];
-$perfil = $_SESSION['perfil'];
-?>
 
+session_start();
+$perfil = $_SESSION['perfil'];
+
+try {
+    // inclui o arquivo de conexão com o banco de dados
+    include("./config/connection.php");
+
+    if (isset($_GET['idUsuario'])) {
+      $idUsuario = $_GET['idUsuario'];
+    } else {
+      // se não foi enviado, redireciona para a página de listagem
+      header("Location: index.php");
+      exit();
+    }
+
+  // verifica se os campos foram preenchidos e se o formulário foi enviado
+  if (isset($_POST['nome']) && 
+      isset($_POST['email']) && 
+      isset($_POST['senha']) &&
+      isset($_POST['telefone']) && 
+      isset($_POST['endereco']) &&
+      isset($_POST['tipo'])
+      ) {
+
+      // recebe os valores do formulário em variáveis locais
+      $nome = $_POST['nome'];
+      $email = $_POST['email'];
+      $senha = $_POST['senha'];
+      $telefone = $_POST['telefone'];
+      $endereco = $_POST['endereco'];
+      $tipo = $_POST['tipo'];
+      
+      // cria a query de inserção no banco de dados
+      $sql = "UPDATE usuario 
+              SET nome = :nome, email = :email, senha = :senha, telefone = :telefone, endereco = :endereco, tipo = :tipo
+              WHERE id = :idUsuario";
+      // prepara a query para ser executada
+      $pdo = $pdo->prepare($sql);
+
+      // substitui os parâmetros da query
+      $pdo->bindParam(":nome", $nome);
+      $pdo->bindParam(":email", $email);
+      $pdo->bindParam(":senha", $senha);
+      $pdo->bindParam(":telefone", $telefone);
+      $pdo->bindParam(":endereco", $endereco);
+      $pdo->bindParam(":tipo", $tipo);
+      $pdo->bindParam(":idUsuario", $idUsuario);
+
+      // executa a query
+      $pdo->execute();
+      // verifica se a query foi executada com sucesso
+
+      if ($pdo->rowCount() == 1) {
+        //$_SESSION['perfil'] = $tipo;
+        header("Location: index.php");
+      } else {
+        $mensagem = "Erro ao atualizar usuário!";
+      }
+  }
+
+  $sqlBusca = "SELECT * FROM usuario WHERE id = $idUsuario";
+  $resultado = $pdo->query($sqlBusca);
+  $resultado = $resultado->fetch(PDO::FETCH_ASSOC);
+
+} catch (Exception $e) {
+  echo 'Exceção capturada: ',  $e->getMessage(), "\n";
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,7 +99,7 @@ $perfil = $_SESSION['perfil'];
   <link href="assets/css/main.css" rel="stylesheet">
 </head>
 
-<body class="index-page">
+<body class="get-a-quote-page">
 
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
@@ -47,13 +112,13 @@ $perfil = $_SESSION['perfil'];
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="index.php" class="active">Home<br></a></li>
+          <li><a href="index.php">Home<br></a></li>
 
           <?php
             if (isset($idUsuario)) {
-              echo "<li><a href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Atualizar Usuário</a></li>";
+              echo "<li><a class='active' href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Atualizar Usuário</a></li>";
             } else {
-              echo '<li><a href="usuario.php">Usuário</a></li>';
+              echo '<li><a class="active" href="usuario.php">Usuário</a></li>';
             }
           ?>
           
@@ -76,106 +141,96 @@ $perfil = $_SESSION['perfil'];
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
-
-      <a class="btn-getstarted" href="login.php">Acessar</a>
     </div>
   </header>
 
   <main class="main">
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero section">
+    <!-- Page Title -->
+    <div class="page-title position-relative" data-aos="fade" style="background-image: url(assets/img/page-title-bg.jpg);">
+      <div class="container position-relative">
+        <h1 class="">Tela do Usuário</h1>
+        <p>Nessa tela é possível realizar a manipulação de dados do usuário</p>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="index.php">Home</a></li>
+            <li class="current">Tela de Usuário</li>
+          </ol>
+        </nav>
+      </div>
+    </div><!-- End Page Title -->
 
-      <img src="assets/img/world-dotted-map.png" alt="" class="hero-bg" data-aos="fade-in">
+    <!-- Get A Quote Section -->
+    <section id="get-a-quote" class="get-a-quote section">
 
       <div class="container">
-        <div class="row gy-4 d-flex justify-content-between">
-          <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center">
-            <h2 data-aos="fade-up">Marketplace para Divulgação de Espaços para Eventos</h2>
-            <p data-aos="fade-up" data-aos-delay="100">
-              Um marketplace para divulgação de espaços para eventos é uma plataforma online que conecta proprietários de locais com organizadores de eventos, oferecendo maior visibilidade e ferramentas de gerenciamento para os proprietários, enquanto facilita a busca, comparação e reserva de espaços ideais para os organizadores, criando uma ponte eficiente entre oferta e demanda e beneficiando ambas as partes.              
-            </p>
 
-            <form action="listar_espacos.php" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
-              <input type="text" class="form-control" placeholder="Informe o endereço do local desejado" required>
-              <button type="submit" class="btn btn-primary">Buscar</button>
+        <div class="row g-0" data-aos="fade-up" data-aos-delay="100">
+
+          <div class="col-lg-5 quote-bg" style="background-image: url(assets/img/quote-bg.jpg);"></div>
+
+          <div class="col-lg-7">
+            <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
+              <!-- Usuário - id (PK), nome, email, senha, tipo, telefone, endereco, tipo (Enum Locador/Locatario) -->
+
+              <div class="row gy-4">
+
+                <div class="col-lg-12">
+                  <h4>Informe seus dados</h4>
+                </div>
+
+                <div class="col-md-12">
+                  <input type="text" name="id" class="form-control" placeholder="Id" readonly value="<?php echo (isset($resultado['id'])) ? $resultado['id'] : "" ?>">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="text" name="nome" class="form-control" placeholder="Nome" required value="<?php echo (isset($resultado['nome'])) ? $resultado['nome'] : "" ?>">
+                </div>
+
+                <div class="col-md-12 ">
+                  <input type="email" name="email" class="form-control" placeholder="Email" required value="<?php echo (isset($resultado['email'])) ? $resultado['email'] : "" ?>">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="password" name="senha" class="form-control" placeholder="senha" required value="<?php echo (isset($resultado['senha'])) ? $resultado['senha'] : "" ?>">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="text" name="telefone" class="form-control" placeholder="telefone" required value="<?php echo (isset($resultado['telefone'])) ? $resultado['telefone'] : "" ?>">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="text" name="endereco" class="form-control" placeholder="endereco" required value="<?php echo (isset($resultado['endereco'])) ? $resultado['endereco'] : "" ?>">
+                </div>
+
+                <div class="col-md-12">
+                  <label for="tipo">Escolha o perfil:</label>
+                  <select id="tipo" name="tipo">
+                    <option value="L" <?php echo (isset($resultado['tipo']) && $resultado['tipo'] == 'L') ? "selected" : "" ?> >Locador</option>
+                    <option value="T" <?php echo (isset($resultado['tipo']) && $resultado['tipo'] == 'T') ? "selected" : "" ?> >Locatário</option>
+                  </select>
+                </div>
+
+                <!-- <div class="col-md-12">
+                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+                </div> -->
+
+                <div class="col-md-12 text-center">
+                    <?php
+                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
+                    ?>
+
+                  <button type="submit">Atualizar</button>
+                </div>
+              </div>
             </form>
+          </div><!-- End Quote Form -->
 
-            <div class="row gy-4" data-aos="fade-up" data-aos-delay="300">
-
-              <div class="col-lg-3 col-6">
-                <div class="stats-item text-center w-100 h-100">
-                  <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="0" class="purecounter">232</span>
-                  <p>Usuários</p>
-                </div>
-              </div><!-- End Stats Item -->
-
-              <div class="col-lg-3 col-6">
-                <div class="stats-item text-center w-100 h-100">
-                  <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="0" class="purecounter">521</span>
-                  <p>Espaços</p>
-                </div>
-              </div><!-- End Stats Item -->
-
-              <div class="col-lg-3 col-6">
-                <div class="stats-item text-center w-100 h-100">
-                  <span data-purecounter-start="0" data-purecounter-end="1453" data-purecounter-duration="0" class="purecounter">1453</span>
-                  <p>Eventos</p>
-                </div>
-              </div><!-- End Stats Item -->
-            </div>
-
-          </div>
-
-          <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-            <img src="assets/img/hero-img.svg" class="img-fluid mb-3 mb-lg-0" alt="">
-          </div>
-
-        </div>
-      </div>
-
-    </section><!-- /Hero Section -->
-
-    <!-- Services Section -->
-    <section id="services" class="services section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <span class="">Espaços para Eventos<br></span>
-        <h2 class="">Espaços para Eventos</h2>
-        <p>Alguns dos espaços divulgados para realização de eventos!</p>
-      </div><!-- End Section Title -->
-
-      <div class="container">
-
-        <div class="row gy-4">
-          <?php           
-            try {
-                require_once './config/connection.php';
-
-                $data = $pdo->prepare('SELECT * FROM espacos LIMIT 3');
-                $data->execute();
-
-                while ($row = $data->fetch()) {
-                  echo "<div class='col-lg-4 col-md-6' data-aos='fade-up' data-aos-delay='100'>";
-                  echo "<div class='card'>";
-                  echo "<div class='card-img' style='width: 414px !important; height: 276px !important;'>";
-                  echo '<img class="img-fluid" src="data:image/jpeg;base64,'.base64_encode($row['foto']).'" width="414px" height="276px" />';
-                  echo "</div>";
-                  echo "<h3>" . $row['nome'] . "</h3>";
-                  echo "<p> Descrição: " . $row['descricao'] . "</p>";
-                  echo "</div>";
-                  echo "</div>";
-                }
-              } catch (Exception $e) {
-                echo 'Exceção capturada: ',  $e->getMessage(), "\n";
-              }
-          ?>
         </div>
 
       </div>
 
-    </section><!-- /Services Section -->
+    </section><!-- /Get A Quote Section -->
 
   </main>
 
@@ -249,7 +304,6 @@ $perfil = $_SESSION['perfil'];
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>

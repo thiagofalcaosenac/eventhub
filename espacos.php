@@ -2,6 +2,10 @@
 
 try {
 
+  session_start();
+  $idUsuario = $_SESSION['idUsuario'];
+  $perfil = $_SESSION['perfil'];
+
   if (isset($_POST['nome']) && 
       isset($_POST['descricao']) && 
       isset($_POST['capacidade']) &&
@@ -52,7 +56,7 @@ try {
 
       if ($pdo->rowCount() == 1) {
           $mensagem = "Espaço inserido com sucesso!";
-          // header("Location: list_disciplina.php");
+          header("Location: listar_espacos.php");
       } else {
           $mensagem = "Erro ao inserir espaço!";
       }
@@ -106,13 +110,28 @@ try {
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.php">Home<br></a></li>
-          <li><a href="usuario.php">Usuário</a></li>
-          <li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="listar_espacos.php">Listagem</a></li>
-              <li><a href="espacos.php">Cadastro</a></li>
-            </ul>
-          </li>
+
+          <?php
+            if (isset($idUsuario)) {
+              echo "<li><a href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Atualizar Usuário</a></li>";
+            } else {
+              echo '<li><a href="usuario.php">Usuário</a></li>';
+            }
+          ?>
+          
+          <?php
+            if (isset($perfil) && $perfil == 'L') {
+              echo '<li><a href="listar_espacos.php">Espaços</a></li>';
+            } else {
+              echo '<li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
+              echo '<ul>';
+              echo '<li><a href="listar_espacos.php">Listagem</a></li>';
+              echo '<li><a href="espacos.php">Cadastro</a></li>';
+              echo '</ul>';
+              echo '</li>';
+            }
+          ?>
+
           <li><a href="eventos.php">Eventos</a></li>
           <li><a href="avaliacoes.php">Avaliações</a></li>
 

@@ -1,3 +1,8 @@
+<?php
+session_start();
+$idUsuario = $_SESSION['idUsuario'];
+$perfil = $_SESSION['perfil'];
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,6 +28,9 @@
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
@@ -42,13 +50,28 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="index.php">Home<br></a></li>
-          <li><a href="usuario.php">Usuário</a></li>
-          <li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="listar_espacos.php">Listagem</a></li>
-              <li><a href="espacos.php">Cadastro</a></li>
-            </ul>
-          </li>
+
+          <?php
+            if (isset($idUsuario)) {
+              echo "<li><a href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Atualizar Usuário</a></li>";
+            } else {
+              echo '<li><a href="usuario.php">Usuário</a></li>';
+            }
+          ?>
+          
+          <?php
+            if (isset($perfil) && $perfil == 'L') {
+              echo '<li><a href="listar_espacos.php">Espaços</a></li>';
+            } else {
+              echo '<li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
+              echo '<ul>';
+              echo '<li><a href="listar_espacos.php">Listagem</a></li>';
+              echo '<li><a href="espacos.php">Cadastro</a></li>';
+              echo '</ul>';
+              echo '</li>';
+            }
+          ?>
+
           <li><a href="eventos.php">Eventos</a></li>
           <li><a href="avaliacoes.php">Avaliações</a></li>
 
@@ -103,10 +126,16 @@
               while ($row = $data->fetch()) {
                 echo "<div class='col-lg-4 col-md-6' data-aos='fade-up' data-aos-delay='100'>";
                 echo "<div class='card'>";
-                echo "<div class='card-img' style='width: 414px !important; height: 276px !important;'>";
-                echo '<img class="img-fluid" src="data:image/jpeg;base64,'.base64_encode($row['foto']).'" width="414px" height="276px" />';
+                echo "<div class='card-img'>";
+                echo '<img class="img-fluid" src="data:image/jpeg;base64,'.base64_encode($row['foto']).'" />';
                 echo "</div>";
-                echo "<h3>" . $row['nome'] . "</h3>";
+                if (isset($perfil) && $perfil == 'L') {
+                  echo "<h3>" . $row['nome'] . "</h3>";
+                } else {
+                  echo "<a href='atualizar_espaco.php?idEspaco=" . $row['id'] . "'>";
+                  echo "<h3><i class='glyphicon glyphicon-edit'>" . $row['nome'] . "</i></h3>";
+                  echo '</a>';
+                }
                 echo "<p> Descrição: " . $row['descricao'] . "</p>";
                 echo "</div>";
                 echo "</div>";
@@ -199,6 +228,7 @@
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>

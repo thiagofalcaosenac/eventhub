@@ -1,3 +1,40 @@
+<?php
+session_start();
+
+try {
+
+  if (isset($_POST['typeEmailX']) && isset($_POST['typePasswordX'])) {
+      // inclui o arquivo de conexão com o banco de dados
+      include("./config/connection.php");
+
+      // recebe os valores do formulário em variáveis locais
+      $email = $_POST['typeEmailX'];
+      $senha = $_POST['typePasswordX'];
+
+      $sql = "SELECT * FROM usuario WHERE email = :email AND senha = :senha";
+      $pdo = $pdo->prepare($sql);
+
+      // substitui os parâmetros da query
+      $pdo->bindParam(":email", $email);
+      $pdo->bindParam(":senha", $senha);
+
+      // executa a query
+      $pdo->execute();
+
+      if ($pdo->rowCount() == 1) {
+          $usuario = $pdo->fetch();
+          $_SESSION['idUsuario'] = $usuario['id'];
+          $_SESSION['perfil'] = $usuario['tipo'];
+          header("Location: index.php");
+      } else {
+          $mensagem = "Usuário ou senha inválidos!";
+      }
+  }
+} catch (Exception $e) {
+  echo 'Exceção capturada: ',  $e->getMessage(), "\n";
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -28,7 +65,7 @@
   <link href="assets/css/main.css" rel="stylesheet">
 </head>
 
-<body class="get-a-quote-page">
+<body>
 
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
@@ -74,15 +111,23 @@
     
                   <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
                   <p class="text-black-50 mb-5">Entre com seu email e senha</p>
-    
-                  <form action="forms/get-a-quote.php" method="post" class="php-email-form">
+
+                  <div>
+                    <p class="mb-0">
+                    <?php
+                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
+                    ?>
+                    </p>
+                  </div>
+
+                  <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
                     <div data-mdb-input-init class="form-outline form-black mb-4">
-                      <input type="email" id="typeEmailX" class="form-control form-control-lg" required />
+                      <input type="email" name="typeEmailX" id="typeEmailX" class="form-control form-control-lg" required />
                       <label class="form-label" for="typeEmailX">Email</label>
                     </div>
       
                     <div data-mdb-input-init class="form-outline form-black mb-4">
-                      <input type="password" id="typePasswordX" class="form-control form-control-lg" required />
+                      <input type="password" name="typePasswordX" id="typePasswordX" class="form-control form-control-lg" required />
                       <label class="form-label" for="typePasswordX">Senha</label>
                     </div>
       
@@ -92,6 +137,8 @@
                   </form>
                 </div>
     
+                <div class="col-md-12 text-center">
+
                 <div>
                   <p class="mb-0">Não tem uma conta? <a href="usuario.html" class="text-black-50 fw-bold">Registre-se!</a>
                   </p>
@@ -125,7 +172,6 @@
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
