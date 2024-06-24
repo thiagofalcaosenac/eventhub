@@ -113,17 +113,15 @@ try {
 
           <?php
             if (isset($idUsuario)) {
-              echo "<li><a href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Atualizar Usuário</a></li>";
-            } else {
-              echo '<li><a href="usuario.php">Usuário</a></li>';
+              echo "<li><a href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Usuário</a></li>";
             }
           ?>
           
           <?php
             if ((isset($perfil) && $perfil == 'L') || (!(isset($idUsuario)))) {
-              echo '<li><a href="listar_espacos.php">Espaços</a></li>';
+              echo '<li><a href="listar_espacos.php" class="active">Espaços</a></li>';
             } else {
-              echo '<li class="dropdown" class="active"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
+              echo '<li class="dropdown"><a href="#" class="active"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
               echo '<li><a href="listar_espacos.php">Listagem</a></li>';
               echo '<li><a href="espacos.php">Cadastro</a></li>';
@@ -132,8 +130,12 @@ try {
             }
           ?>
 
-          <li><a href="eventos.php">Eventos</a></li>
-          <li><a href="avaliacoes.php">Avaliações</a></li>
+          <?php
+            if (isset($idUsuario)) {
+              echo '<li><a href="eventos.php">Eventos</a></li>';
+              echo '<li><a href="avaliacoes.php">Avaliações</a></li>';
+            }
+          ?>
 
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
