@@ -210,6 +210,19 @@ try {
                   <input type="file" name="foto" class="form-control" placeholder="Foto">
                 </div>
 
+                <!-- APIKEU DO GOOGLE PARA O MAPA -> AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg -->
+
+                <!-- <div class="col-md-12 text-center">
+                  <iframe
+                    width="450"
+                    height="250"
+                    frameborder="0" style="border:0"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg&q=Eiffel+Tower,Paris+France"
+                    allowfullscreen>
+                  </iframe>
+                </div> -->
+
                 <div class="col-md-12 text-center">
                   <?php
                     echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
