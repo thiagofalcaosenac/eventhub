@@ -130,7 +130,7 @@ try {
 
           <?php
             if (isset($idUsuario)) {
-              echo "<li><a href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Usuário</a></li>";
+              echo "<li><a href='../usuario/atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Usuário</a></li>";
             }
           ?>
           
