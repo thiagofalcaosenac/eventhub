@@ -13,5 +13,5 @@
       echo 'Perfil do Usuário na Sessão: ' . Session::getProfileUser() . ' = LOCADOR';
     }    
   } else {
-    header("Location: login.php");
+    header("Location: ../login/login.php");
   }

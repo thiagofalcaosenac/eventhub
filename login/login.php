@@ -27,7 +27,7 @@ try {
             'idUsuario' => $usuario['id'],
             'perfil' => $usuario['tipo'],
           ]);
-          header("Location: index.php");
+          header("Location: ../index.php");
       } else {
           $mensagem = "Usuário ou senha inválidos!";
       }

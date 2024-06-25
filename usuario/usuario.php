@@ -40,7 +40,7 @@ try {
           'perfil' => $tipo,
         ]);
 
-        header("Location: login.php");
+        header("Location: ../login/login.php");
         $mensagem = "Usuário inserido com sucesso!";
       } else {
         $mensagem = "Erro ao inserir usuário!";

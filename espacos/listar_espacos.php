@@ -84,7 +84,7 @@
 
       <?php
         if (!(isset($idUsuario))) {
-          echo '<a class="btn-getstarted" href="login.php">Acessar</a>';
+          echo '<a class="btn-getstarted" href="../login/login.php">Acessar</a>';
         }
       ?>
 
