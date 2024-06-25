@@ -163,7 +163,7 @@ try {
                 </div>
 
                 <div class="col-md-12">
-                  <input type="number" min="1" max="10" name="classificacao" class="form-control" placeholder="Classificação" required>                  
+                  <input type="number" min="1" max="10" name="classificacao" class="form-control" placeholder="Classificação de 1 a 10" required>                  
                 </div>
 
                 <div class="col-md-12">
