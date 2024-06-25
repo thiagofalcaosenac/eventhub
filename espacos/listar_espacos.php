@@ -73,8 +73,8 @@
 
           <?php
             if (isset($idUsuario)) {
-              echo '<li><a href="eventos.php">Eventos</a></li>';
-              echo '<li><a href="avaliacoes.php">Avaliações</a></li>';
+              echo '<li><a href="../eventos/eventos.php">Eventos</a></li>';
+              echo '<li><a href="../avaliacoes/avaliacoes.php">Avaliações</a></li>';
             }
           ?>
 
@@ -128,7 +128,7 @@
 
         <?php           
           try {
-              require_once '../config/connection.php';
+              require_once '../database/connection.php';
 
               $filtro = $_POST['filtro'];
               echo ($filtro);

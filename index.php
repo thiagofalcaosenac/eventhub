@@ -107,7 +107,7 @@ try {
               Um marketplace para divulgação de espaços para eventos é uma plataforma online que conecta proprietários de locais com organizadores de eventos, oferecendo maior visibilidade e ferramentas de gerenciamento para os proprietários, enquanto facilita a busca, comparação e reserva de espaços ideais para os organizadores, criando uma ponte eficiente entre oferta e demanda e beneficiando ambas as partes.              
             </p>
 
-            <form action="listar_espacos.php" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
+            <form action="./espacos/listar_espacos.php" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
               <input type="text" class="form-control" placeholder="Informe o endereço do local desejado" required>
               <button type="submit" class="btn btn-primary">Buscar</button>
             </form>
@@ -162,7 +162,7 @@ try {
         <div class="row gy-4">
           <?php           
             try {
-                require_once './config/connection.php';
+                require_once './database/connection.php';
 
                 $data = $pdo->prepare('SELECT * FROM espacos LIMIT 3');
                 $data->execute();

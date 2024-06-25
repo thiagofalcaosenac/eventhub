@@ -5,7 +5,7 @@ try {
 
   if (isset($_POST['typeEmailX']) && isset($_POST['typePasswordX'])) {
       // inclui o arquivo de conexão com o banco de dados
-      include("../config/connection.php");
+      include("../database/connection.php");
 
       // recebe os valores do formulário em variáveis locais
       $email = $_POST['typeEmailX'];

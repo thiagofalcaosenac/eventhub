@@ -5,9 +5,9 @@ try {
   Session::start();
   $idUsuario = Session::getIdUser();
   $perfil = Session::getProfileUser();
-  
+
   // inclui o arquivo de conexão com o banco de dados
-  include("../config/connection.php");
+  include("../database/connection.php");
 
   if (isset($_GET['idEspaco'])) {
     $idEspaco = $_GET['idEspaco'];
@@ -149,8 +149,8 @@ try {
 
           <?php
             if (isset($idUsuario)) {
-              echo '<li><a href="eventos.php">Eventos</a></li>';
-              echo '<li><a href="avaliacoes.php">Avaliações</a></li>';
+              echo '<li><a href="../eventos/eventos.php">Eventos</a></li>';
+              echo '<li><a href="../avaliacoes/avaliacoes.php">Avaliações</a></li>';
             }
           ?>
 

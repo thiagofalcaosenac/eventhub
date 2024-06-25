@@ -15,7 +15,7 @@ try {
       isset($_POST['comodidades'])) {
 
       // inclui o arquivo de conexão com o banco de dados
-      include("../config/connection.php");
+      include("../database/connection.php");
 
       // recebe os valores do formulário em variáveis locais
       $nome = $_POST['nome'];
@@ -134,8 +134,8 @@ try {
 
           <?php
             if (isset($idUsuario)) {
-              echo '<li><a href="eventos.php">Eventos</a></li>';
-              echo '<li><a href="avaliacoes.php">Avaliações</a></li>';
+              echo '<li><a href="../eventos/eventos.php">Eventos</a></li>';
+              echo '<li><a href="../avaliacoes/avaliacoes.php">Avaliações</a></li>';
             }
           ?>
 

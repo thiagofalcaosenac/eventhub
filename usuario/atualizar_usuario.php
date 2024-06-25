@@ -5,7 +5,7 @@
     Session::start();
 
     // inclui o arquivo de conexão com o banco de dados
-    include("../config/connection.php");
+    include("../database/connection.php");
 
     if (Session::isSessionActive()) {
       $idUsuario = Session::getIdUser();
@@ -113,18 +113,18 @@
 
           <?php
             if (isset($idUsuario)) {
-              echo "<li><a class='active' href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Usuário</a></li>";
+              echo "<li><a class='active' href='../usuario/atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Usuário</a></li>";
             }
           ?>
           
           <?php
             if ((isset($perfil) && $perfil == 'L') || (!(isset($idUsuario)))) {
-              echo '<li><a href="listar_espacos.php">Espaços</a></li>';
+              echo '<li><a href="../espacos/listar_espacos.php">Espaços</a></li>';
             } else {
               echo '<li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
-              echo '<li><a href="listar_espacos.php">Listagem</a></li>';
-              echo '<li><a href="espacos.php">Cadastro</a></li>';
+              echo '<li><a href="../espacos/listar_espacos.php">Listagem</a></li>';
+              echo '<li><a href="../espacos/espacos.php">Cadastro</a></li>';
               echo '</ul>';
               echo '</li>';
             }
@@ -132,8 +132,8 @@
 
           <?php
             if (isset($idUsuario)) {
-              echo '<li><a href="eventos.php">Eventos</a></li>';
-              echo '<li><a href="avaliacoes.php">Avaliações</a></li>';
+              echo '<li><a href="../eventos/eventos.php">Eventos</a></li>';
+              echo '<li><a href="../avaliacoes/avaliacoes.php">Avaliações</a></li>';
             }
           ?>
 

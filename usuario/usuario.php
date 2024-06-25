@@ -13,7 +13,7 @@ try {
       ) {
 
       // inclui o arquivo de conexão com o banco de dados
-      include("../config/connection.php");
+      include("../database/connection.php");
 
       $nome = $_POST['nome'];
       $email = $_POST['email'];

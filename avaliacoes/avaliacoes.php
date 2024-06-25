@@ -13,7 +13,7 @@ try {
       ) {
 
       // inclui o arquivo de conexão com o banco de dados
-      require_once("../config/connection.php");
+      require_once("../database/connection.php");
 
       // recebe os valores do formulário em variáveis locais
       $classificacao = $_POST['classificacao'];
@@ -94,18 +94,18 @@ try {
 
           <?php
             if (isset($idUsuario)) {
-              echo "<li><a href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Usuário</a></li>";
+              echo "<li><a href='../usuario/atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Usuário</a></li>";
             }
           ?>
           
           <?php
             if ((isset($perfil) && $perfil == 'L') || (!(isset($idUsuario)))) {
-              echo '<li><a href="listar_espacos.php">Espaços</a></li>';
+              echo '<li><a href="../espacos/listar_espacos.php">Espaços</a></li>';
             } else {
               echo '<li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
-              echo '<li><a href="listar_espacos.php">Listagem</a></li>';
-              echo '<li><a href="espacos.php">Cadastro</a></li>';
+              echo '<li><a href="../espacos/listar_espacos.php">Listagem</a></li>';
+              echo '<li><a href="../espacos/espacos.php">Cadastro</a></li>';
               echo '</ul>';
               echo '</li>';
             }
@@ -113,7 +113,7 @@ try {
 
           <?php
             if (isset($idUsuario)) {
-              echo '<li><a href="eventos.php">Eventos</a></li>';
+              echo '<li><a href="../eventos/eventos.php">Eventos</a></li>';
               echo '<li><a class="active" href="avaliacoes.php">Avaliações</a></li>';
             }
           ?>
@@ -177,7 +177,7 @@ try {
                   <label for="id_espaco">Espaço:</label>
                   <select id="id_espaco" name="id_espaco">
                   <?php
-                    require_once('../config/connection.php');
+                    require_once('../database/connection.php');
 
                     $data = $pdo->prepare('SELECT * FROM espacos');
                     $data->execute();
