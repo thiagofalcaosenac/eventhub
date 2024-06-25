@@ -1,68 +1,71 @@
 <?php
 
-  try {
-    session_start();
-    $perfil = $_SESSION['perfil'];
+try {
 
-    // inclui o arquivo de conexão com o banco de dados
-    include("./config/connection.php");
+  require_once("../sessao/Session.php");
+  Session::start();
+  $idUsuario = Session::getIdUser();
+  $perfil = Session::getProfileUser();
 
-    if (isset($_GET['idUsuario'])) {
-      $idUsuario = $_GET['idUsuario'];
-    }
+  if (isset($_POST['nome']) && 
+      isset($_POST['descricao']) && 
+      isset($_POST['capacidade']) &&
+      isset($_POST['endereco']) && 
+      isset($_POST['preco']) &&
+      isset($_POST['comodidades'])) {
 
-    // verifica se os campos foram preenchidos e se o formulário foi enviado
-    if (isset($_POST['nome']) && 
-        isset($_POST['email']) && 
-        isset($_POST['senha']) &&
-        isset($_POST['telefone']) && 
-        isset($_POST['endereco']) &&
-        isset($_POST['tipo'])
-        ) {
+      // inclui o arquivo de conexão com o banco de dados
+      include("../config/connection.php");
 
-        // recebe os valores do formulário em variáveis locais
-        $nome = $_POST['nome'];
-        $email = $_POST['email'];
-        $senha = $_POST['senha'];
-        $telefone = $_POST['telefone'];
-        $endereco = $_POST['endereco'];
-        $tipo = $_POST['tipo'];
-        
-        // cria a query de inserção no banco de dados
-        $sql = "UPDATE usuario 
-                SET nome = :nome, email = :email, senha = :senha, telefone = :telefone, endereco = :endereco, tipo = :tipo
-                WHERE id = :idUsuario";
-        // prepara a query para ser executada
-        $pdo = $pdo->prepare($sql);
+      // recebe os valores do formulário em variáveis locais
+      $nome = $_POST['nome'];
+      $descricao = $_POST['descricao'];
+      $capacidade = $_POST['capacidade'];
+      $endereco = $_POST['endereco'];
+      $preco = $_POST['preco'];
+      $comodidades = $_POST['comodidades'];
 
-        // substitui os parâmetros da query
-        $pdo->bindParam(":nome", $nome);
-        $pdo->bindParam(":email", $email);
-        $pdo->bindParam(":senha", $senha);
-        $pdo->bindParam(":telefone", $telefone);
-        $pdo->bindParam(":endereco", $endereco);
-        $pdo->bindParam(":tipo", $tipo);
-        $pdo->bindParam(":idUsuario", $idUsuario);
+      $tamanho_imagem = $_FILES['foto']['size'];
+      $tipo_imagem = $_FILES['foto']['type'];
+      $nome_foto = $_FILES['foto']['name'];
 
-        // executa a query
-        $pdo->execute();
-        // verifica se a query foi executada com sucesso
+      $fp = fopen($_FILES['foto']['tmp_name'], 'rb');
 
-        if ($pdo->rowCount() == 1) {
-          $_SESSION['perfil'] = $tipo;
-          header("Location: index.php");
-        } else {
-          $mensagem = "Erro ao atualizar usuário!";
-        }
-    }
+      // cria a query de inserção no banco de dados
+      $sql = "INSERT INTO espacos (nome,descricao,capacidade,endereco,preco,comodidades, nome_imagem, tamanho_imagem, tipo_imagem, foto, id_usuario) 
+              VALUES (:nome,:descricao,:capacidade,:endereco,:preco,:comodidades, :nome_foto, :tamanho_imagem, :tipo_imagem, :imagem, :id_usuario)";
+      // prepara a query para ser executada
+      $pdo = $pdo->prepare($sql);
 
-    $sqlBusca = "SELECT * FROM usuario WHERE id = $idUsuario";
-    $resultado = $pdo->query($sqlBusca);
-    $resultado = $resultado->fetch(PDO::FETCH_ASSOC);
+      // substitui os parâmetros da query
+      $pdo->bindParam(":nome", $nome);
+      $pdo->bindParam(":descricao", $descricao);
+      $pdo->bindParam(":capacidade", $capacidade);
+      $pdo->bindParam(":endereco", $endereco);
+      $pdo->bindParam(":preco", $preco);
+      $pdo->bindParam(":comodidades", $comodidades);
+      $pdo->bindParam(":id_usuario", $idUsuario);
 
-  } catch (Exception $e) {
-    echo 'Exceção capturada: ',  $e->getMessage(), "\n";
+      $pdo->bindParam(":nome_foto", $nome_foto);
+      $pdo->bindParam(":tamanho_imagem", $tamanho_imagem);
+      $pdo->bindParam(":tipo_imagem", $tipo_imagem);
+      $pdo->bindParam(":imagem", $fp, PDO::PARAM_LOB);
+
+      // executa a query
+      $pdo->execute();
+      fclose($fp);
+      // verifica se a query foi executada com sucesso
+
+      if ($pdo->rowCount() == 1) {
+          $mensagem = "Espaço inserido com sucesso!";
+          header("Location: listar_espacos.php");
+      } else {
+          $mensagem = "Erro ao inserir espaço!";
+      }
   }
+} catch (Exception $e) {
+  echo 'Exceção capturada: ',  $e->getMessage(), "\n";
+}
 
 ?>
 <!DOCTYPE html>
@@ -76,8 +79,8 @@
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="../assets/img/favicon.png" rel="icon">
+  <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -85,14 +88,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="../assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="../assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
   <!-- Main CSS File -->
-  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="../assets/css/main.css" rel="stylesheet">
 </head>
 
 <body class="get-a-quote-page">
@@ -100,27 +103,27 @@
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-      <a href="index.php" class="logo d-flex align-items-center me-auto">
+      <a href="../index.php" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
-        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <!-- <img src="../assets/img/logo.png" alt=""> -->
         <h1 class="sitename">EventHub</h1>
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="index.php">Home<br></a></li>
+          <li><a href="../index.php">Home<br></a></li>
 
           <?php
             if (isset($idUsuario)) {
-              echo "<li><a class='active' href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Usuário</a></li>";
+              echo "<li><a href='atualizar_usuario.php?idUsuario=" . $idUsuario . "'>Usuário</a></li>";
             }
           ?>
           
           <?php
             if ((isset($perfil) && $perfil == 'L') || (!(isset($idUsuario)))) {
-              echo '<li><a href="listar_espacos.php">Espaços</a></li>';
+              echo '<li><a href="listar_espacos.php" class="active">Espaços</a></li>';
             } else {
-              echo '<li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
+              echo '<li class="dropdown"><a href="#" class="active"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
               echo '<li><a href="listar_espacos.php">Listagem</a></li>';
               echo '<li><a href="espacos.php">Cadastro</a></li>';
@@ -145,14 +148,14 @@
   <main class="main">
 
     <!-- Page Title -->
-    <div class="page-title position-relative" data-aos="fade" style="background-image: url(assets/img/page-title-bg.jpg);">
+    <div class="page-title position-relative" data-aos="fade" style="background-image: url(../assets/img/page-title-bg.jpg);">
       <div class="container position-relative">
-        <h1 class="">Tela do Usuário</h1>
-        <p>Nessa tela é possível realizar a manipulação de dados do usuário</p>
+        <h1 class="">Tela de Espaços</h1>
+        <p>Nesta tela é possível fazer a manipulação de dados do espaço</p>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="index.php">Home</a></li>
-            <li class="current">Tela de Usuário</li>
+            <li><a href="../index.php">Home</a></li>
+            <li class="current">Tela de Espaços</li>
           </ol>
         </nav>
       </div>
@@ -165,61 +168,70 @@
 
         <div class="row g-0" data-aos="fade-up" data-aos-delay="100">
 
-          <div class="col-lg-5 quote-bg" style="background-image: url(assets/img/quote-bg.jpg);"></div>
+          <div class="col-lg-5 quote-bg" style="background-image: url(../assets/img/quote-bg.jpg);"></div>
 
-          <div class="col-lg-7">
+          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
             <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
-              <!-- Usuário - id (PK), nome, email, senha, tipo, telefone, endereco, tipo (Enum Locador/Locatario) -->
+              <!-- Espaço - id(PK), nome, descricao, capacidade, endereco, preco, comodidades, avaliacaoMedia, foto, id_usuario(FK) -->
 
               <div class="row gy-4">
 
                 <div class="col-lg-12">
-                  <h4>Informe seus dados</h4>
+                  <h4>Informe dados do espaço</h4>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="id" class="form-control" placeholder="Id" readonly value="<?php echo (isset($resultado['id'])) ? $resultado['id'] : "" ?>">
+                  <input type="text" name="id" class="form-control" placeholder="Id" readonly hidden>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="nome" class="form-control" placeholder="Nome" required value="<?php echo (isset($resultado['nome'])) ? $resultado['nome'] : "" ?>">
+                  <input type="text" name="nome" class="form-control" placeholder="Nome" required>
                 </div>
-
-                <div class="col-md-12 ">
-                  <input type="email" name="email" class="form-control" placeholder="Email" required value="<?php echo (isset($resultado['email'])) ? $resultado['email'] : "" ?>">
+                
+                <div class="col-md-12">
+                  <textarea class="form-control" name="descricao" rows="6" placeholder="Descrição" required=""></textarea>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="password" name="senha" class="form-control" placeholder="senha" required value="<?php echo (isset($resultado['senha'])) ? $resultado['senha'] : "" ?>">
+                  <input type="int" name="capacidade" class="form-control" placeholder="Capacidade" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="telefone" class="form-control" placeholder="telefone" required value="<?php echo (isset($resultado['telefone'])) ? $resultado['telefone'] : "" ?>">
+                  <input type="text" name="endereco" class="form-control" placeholder="Endereço" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="endereco" class="form-control" placeholder="endereco" required value="<?php echo (isset($resultado['endereco'])) ? $resultado['endereco'] : "" ?>">
+                  <input type="number" min="0.00" max="100000.00" name="preco" class="form-control" placeholder="Preço" required>
                 </div>
 
                 <div class="col-md-12">
-                  <label for="tipo">Escolha o perfil:</label>
-                  <select id="tipo" name="tipo">
-                    <option value="L" <?php echo (isset($resultado['tipo']) && $resultado['tipo'] == 'L') ? "selected" : "" ?> >Locador</option>
-                    <option value="T" <?php echo (isset($resultado['tipo']) && $resultado['tipo'] == 'T') ? "selected" : "" ?> >Locatário</option>
-                  </select>
+                  <input type="int" name="comodidades" class="form-control" placeholder="Comodidades" required>
                 </div>
 
-                <!-- <div class="col-md-12">
-                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+                <div class="col-md-12">
+                  <input type="file" name="foto" class="form-control" placeholder="Foto">
+                </div>
+
+                <!-- APIKEU DO GOOGLE PARA O MAPA -> AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg -->
+                <!-- <div class="col-md-12 text-center">
+                  <iframe
+                    width="450"
+                    height="250"
+                    frameborder="0" style="border:0"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg&q=Eiffel+Tower,Paris+France"
+                    allowfullscreen>
+                  </iframe>
                 </div> -->
 
                 <div class="col-md-12 text-center">
-                    <?php
+                  <?php
                     echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
-                    ?>
+                  ?>
 
-                  <button type="submit">Atualizar</button>
+                  <button type="submit">Salvar</button>
                 </div>
+
               </div>
             </form>
           </div><!-- End Quote Form -->
@@ -237,7 +249,7 @@
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-5 col-md-12 footer-about">
-          <a href="index.php" class="logo d-flex align-items-center">
+          <a href="../index.php" class="logo d-flex align-items-center">
             <span class="sitename">Marketplace para Divulgação de Espaços para Eventos</span>
           </a>
           <p>
@@ -301,14 +313,14 @@
   <div id="preloader"></div>
 
   <!-- Vendor JS Files -->
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/aos/aos.js"></script>
+  <script src="../assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="../assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="../assets/vendor/swiper/swiper-bundle.min.js"></script>
 
   <!-- Main JS File -->
-  <script src="assets/js/main.js"></script>
+  <script src="../assets/js/main.js"></script>
 
 </body>
 

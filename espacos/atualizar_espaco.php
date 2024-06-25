@@ -1,59 +1,83 @@
 <?php
 
 try {
-  session_start();
-  $idUsuario = $_SESSION['idUsuario'];
-  $perfil = $_SESSION['perfil'];
+  require_once("../sessao/Session.php");
+  Session::start();
+  $idUsuario = Session::getIdUser();
+  $perfil = Session::getProfileUser();
+  
+  // inclui o arquivo de conexão com o banco de dados
+  include("../config/connection.php");
 
-  // verifica se os campos foram preenchidos e se o formulário foi enviado
-  if (isset($_POST['titulo']) && 
+  if (isset($_GET['idEspaco'])) {
+    $idEspaco = $_GET['idEspaco'];
+  } else {
+    // se não foi enviado, redireciona para a página de listagem
+    header("Location: list_disciplina.php");
+    exit();
+  }
+
+
+  if (isset($_POST['nome']) && 
       isset($_POST['descricao']) && 
-      isset($_POST['dataHoraInicial']) &&
-      isset($_POST['dataHoraFinal']) && 
-      isset($_POST['status']) &&
-      isset($_POST['tipo']) && 
-      isset($_POST['id_espaco'])) {
-
-      // inclui o arquivo de conexão com o banco de dados
-      include("./config/connection.php");
+      isset($_POST['capacidade']) &&
+      isset($_POST['endereco']) && 
+      isset($_POST['preco']) &&
+      isset($_POST['comodidades'])) {
 
       // recebe os valores do formulário em variáveis locais
-      $titulo = $_POST['titulo'];
+      $nome = $_POST['nome'];
       $descricao = $_POST['descricao'];
-      $dataHoraInicial = $_POST['dataHoraInicial'];
-      $dataHoraFinal = $_POST['dataHoraFinal'];
-      $status = $_POST['status'];
-      $tipo = $_POST['tipo'];
-      $id_espaco = $_POST['id_espaco'];
-      $precoTotal = $_POST['precoTotal'];
+      $capacidade = $_POST['capacidade'];
+      $endereco = $_POST['endereco'];
+      $preco = $_POST['preco'];
+      $comodidades = $_POST['comodidades'];
 
-      // cria a query de inserção no banco de dados
-      $sql = "INSERT INTO eventos (titulo,descricao,data_hora_inicial,data_hora_final,status,tipo,id_espaco,preco_total, id_usuario) 
-      VALUES (:titulo,:descricao,:dataHoraInicial,:dataHoraFinal,:status,:tipo,:id_espaco,:precoTotal, 1)";
-      // prepara a query para ser executada
+      $tamanho_imagem = $_FILES['foto']['size'];
+      $tipo_imagem = $_FILES['foto']['type'];
+      $nome_imagem = $_FILES['foto']['name'];
+
+      $fp = fopen($_FILES['foto']['tmp_name'], 'rb');
+
+      $sql = "UPDATE espacos 
+              SET nome = :nome, descricao = :descricao, capacidade = :capacidade, endereco = :endereco, preco = :preco, comodidades = :comodidades, 
+                  nome_imagem = :nome_imagem, tamanho_imagem = :tamanho_imagem, tipo_imagem = :tipo_imagem, foto = :foto, 
+                  id_usuario = :id_usuario
+              WHERE id = :idEspaco";
       $pdo = $pdo->prepare($sql);
 
       // substitui os parâmetros da query
-      $pdo->bindParam(":titulo", $titulo);
+      $pdo->bindParam(":idEspaco", $idEspaco);
+      $pdo->bindParam(":nome", $nome);
       $pdo->bindParam(":descricao", $descricao);
-      $pdo->bindParam(":dataHoraInicial", $dataHoraInicial);
-      $pdo->bindParam(":dataHoraFinal", $dataHoraFinal);
-      $pdo->bindParam(":status", $status);
-      $pdo->bindParam(":tipo", $tipo);
-      $pdo->bindParam(":id_espaco", $id_espaco);
-      $pdo->bindParam(":precoTotal", $precoTotal);
+      $pdo->bindParam(":capacidade", $capacidade);
+      $pdo->bindParam(":endereco", $endereco);
+      $pdo->bindParam(":preco", $preco);
+      $pdo->bindParam(":comodidades", $comodidades);
+      $pdo->bindParam(":id_usuario", $idUsuario);
+
+      $pdo->bindParam(":nome_imagem", $nome_imagem);
+      $pdo->bindParam(":tamanho_imagem", $tamanho_imagem);
+      $pdo->bindParam(":tipo_imagem", $tipo_imagem);
+      $pdo->bindParam(":foto", $fp, PDO::PARAM_LOB);
 
       // executa a query
       $pdo->execute();
+      fclose($fp);
       // verifica se a query foi executada com sucesso
 
       if ($pdo->rowCount() == 1) {
-          $mensagem = "Evento inserido com sucesso!";
-          header("Location: eventos.php");
+          $mensagem = "Espaço atualizado com sucesso!";
+          header("Location: listar_espacos.php");
       } else {
-          $mensagem = "Erro ao inserir evento!";
+          $mensagem = "Erro ao atualizar espaço!";
       }
   }
+
+  $sqlBusca = "SELECT * FROM espacos WHERE id = $idEspaco";
+  $resultado = $pdo->query($sqlBusca);
+  $resultado = $resultado->fetch(PDO::FETCH_ASSOC);
+
 } catch (Exception $e) {
   echo 'Exceção capturada: ',  $e->getMessage(), "\n";
 }
@@ -70,8 +94,8 @@ try {
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="../assets/img/favicon.png" rel="icon">
+  <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -79,14 +103,14 @@ try {
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="../assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="../assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
   <!-- Main CSS File -->
-  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="../assets/css/main.css" rel="stylesheet">
 </head>
 
 <body class="get-a-quote-page">
@@ -94,15 +118,15 @@ try {
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
-      <a href="index.php" class="logo d-flex align-items-center me-auto">
+      <a href="../index.php" class="logo d-flex align-items-center me-auto">
         <!-- Uncomment the line below if you also wish to use an image logo -->
-        <!-- <img src="assets/img/logo.png" alt=""> -->
+        <!-- <img src="../assets/img/logo.png" alt=""> -->
         <h1 class="sitename">EventHub</h1>
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="index.php">Home<br></a></li>
+          <li><a href="../index.php">Home<br></a></li>
 
           <?php
             if (isset($idUsuario)) {
@@ -112,9 +136,9 @@ try {
           
           <?php
             if ((isset($perfil) && $perfil == 'L') || (!(isset($idUsuario)))) {
-              echo '<li><a href="listar_espacos.php">Espaços</a></li>';
+              echo '<li><a class="active" href="listar_espacos.php">Espaços</a></li>';
             } else {
-              echo '<li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
+              echo '<li class="dropdown"><a href="#" class="active"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
               echo '<li><a href="listar_espacos.php">Listagem</a></li>';
               echo '<li><a href="espacos.php">Cadastro</a></li>';
@@ -125,7 +149,7 @@ try {
 
           <?php
             if (isset($idUsuario)) {
-              echo '<li><a class="active" href="eventos.php">Eventos</a></li>';
+              echo '<li><a href="eventos.php">Eventos</a></li>';
               echo '<li><a href="avaliacoes.php">Avaliações</a></li>';
             }
           ?>
@@ -139,14 +163,14 @@ try {
   <main class="main">
 
     <!-- Page Title -->
-    <div class="page-title position-relative" data-aos="fade" style="background-image: url(assets/img/page-title-bg.jpg);">
+    <div class="page-title position-relative" data-aos="fade" style="background-image: url(../assets/img/page-title-bg.jpg);">
       <div class="container position-relative">
-        <h1 class="">Tela de Eventos</h1>
-        <p>Nesta tela é possível realizar a manipulação dos dados do evento</p>
+        <h1 class="">Tela de Espaços</h1>
+        <p>Nesta tela é possível fazer a manipulação de dados do espaço</p>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="index.php">Home</a></li>
-            <li class="current">Tela de Eventos</li>
+            <li><a href="../index.php">Home</a></li>
+            <li class="current">Tela de Espaços</li>
           </ol>
         </nav>
       </div>
@@ -159,78 +183,58 @@ try {
 
         <div class="row g-0" data-aos="fade-up" data-aos-delay="100">
 
-          <div class="col-lg-5 quote-bg" style="background-image: url(assets/img/quote-bg.jpg);"></div>
+          <div class="col-lg-5 quote-bg" style="background-image: url(../assets/img/quote-bg.jpg);"></div>
 
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-            <form action="" method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
-              <!-- Evento - id(PK), titulo, descricao, dataHoraInicial, dataHoraFinal, tipo, status, precoTotal, id_usuario(FK), id_espaco(FK) -->
+            <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
+              <!-- Espaço - id(PK), nome, descricao, capacidade, endereco, preco, comodidades, avaliacaoMedia, foto, id_usuario(FK) -->
 
               <div class="row gy-4">
 
                 <div class="col-lg-12">
-                  <h4>Informe dados do evento</h4>
+                  <h4>Informe dados do espaço</h4>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="id" class="form-control" placeholder="Id" readonly hidden>
+                  <input type="text" name="id" class="form-control" placeholder="Id" readonly value="<?php echo (isset($resultado['id'])) ? $resultado['id'] : "" ?>">
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="titulo" class="form-control" placeholder="Título" required>
-                </div>
-
-                <div class="col-md-12">
-                  <input type="text" name="descricao" class="form-control" placeholder="Descrição" required>
-                </div>
-
-                <div class="col-md-12">
-                  <input type="datetime-local" name="dataHoraInicial" class="form-control" placeholder="Data/Hora Inicial" required>
-                </div>
-
-                <div class="col-md-12">
-                  <input type="datetime-local" name="dataHoraFinal" class="form-control" placeholder="Data/Hora Final" required>
-                </div>
-
-                <div class="col-md-12">
-                  <label for="status">Status:</label>
-                  <select id="status" name="status" disabled>
-                    <option value="A">Aberto</option>
-                    <option value="F">Finalizado</option>
-                  </select>                  
+                  <input type="text" name="nome" class="form-control" placeholder="Nome" required value="<?php echo (isset($resultado['nome'])) ? $resultado['nome'] : "" ?>">
                 </div>
                 
-
                 <div class="col-md-12">
-                  <label for="tipo">Tipo de Evento:</label>
-                  <select id="tipo" name="tipo">
-                    <option value="A">Aniversário</option>
-                    <option value="F">Formatura</option>
-                    <option value="R">Reunião</option>
-                    <option value="O">Outros</option>
-                  </select>                  
+                  <textarea class="form-control" name="descricao" rows="6" placeholder="Descrição" required=""><?php echo (isset($resultado['descricao'])) ? trim($resultado['descricao']) : "" ?></textarea>
                 </div>
 
-                <!-- Aqui vai carregar os espaços cadastrados existentes no sistema. -->
                 <div class="col-md-12">
-                  <label for="id_espaco">Espaço:</label>
-                  <select id="id_espaco" name="id_espaco">
+                  <input type="int" name="capacidade" class="form-control" placeholder="Capacidade" required value="<?php echo (isset($resultado['capacidade'])) ? $resultado['capacidade'] : "" ?>">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="text" name="endereco" class="form-control" placeholder="Endereço" required value="<?php echo (isset($resultado['endereco'])) ? $resultado['endereco'] : "" ?>">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="number" min="0.00" max="100000.00" name="preco" class="form-control" placeholder="Preço" required value="<?php echo (isset($resultado['preco'])) ? $resultado['preco'] : "" ?>">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="int" name="comodidades" class="form-control" placeholder="Comodidades" required value="<?php echo (isset($resultado['comodidades'])) ? $resultado['comodidades'] : "" ?>">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="file" name="foto" class="form-control" placeholder="Foto" value="teste">
+                </div>
+
+                <div class="col-md-12">
+                  <input type="text" name="nome_imagem" class="form-control" placeholder="Foto" value="<?php echo $resultado['nome_imagem']; ?>" readonly>
+                </div>                
+
+                <div class="col-md-12">
                   <?php
-                    require_once('./config/connection.php');
-
-                    $data = $pdo->prepare('SELECT * FROM espacos');
-                    $data->execute();
-
-                    while ($row = $data->fetch()) {
-                      echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['descricao'] . "</option>";
-                    }
+                    echo '<img width="200px" class="img-fluid" src="data:image/jpeg;base64,'.base64_encode($resultado['foto']).'" />';
                   ?>
-                  </select>
-                </div>
-
-                <!-- Nesse preço total, o calculo vai ser feito baseado na datahora inicial e final do evento,
-                cada diária vai multiplicar pelo preço contido no cadastro do espaço -->
-                <div class="col-md-12">
-                  <input type="text" name="precoTotal" class="form-control" placeholder="Preço Total" disabled>
                 </div>
 
                 <div class="col-md-12 text-center">
@@ -238,7 +242,7 @@ try {
                     echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
                   ?>
 
-                  <button type="submit">Salvar</button>
+                  <button type="submit">Atualizar</button>
                 </div>
 
               </div>
@@ -258,7 +262,7 @@ try {
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-5 col-md-12 footer-about">
-          <a href="index.php" class="logo d-flex align-items-center">
+          <a href="../index.php" class="logo d-flex align-items-center">
             <span class="sitename">Marketplace para Divulgação de Espaços para Eventos</span>
           </a>
           <p>
@@ -322,14 +326,14 @@ try {
   <div id="preloader"></div>
 
   <!-- Vendor JS Files -->
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/aos/aos.js"></script>
+  <script src="../assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="../assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="../assets/vendor/swiper/swiper-bundle.min.js"></script>
 
   <!-- Main JS File -->
-  <script src="assets/js/main.js"></script>
+  <script src="../assets/js/main.js"></script>
 
 </body>
 

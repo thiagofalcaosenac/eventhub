@@ -29,6 +29,11 @@ class Session {
         return $_SESSION[self::NOMEDASESSAO]['idUsuario'] ?? null;
     }
 
+    public static function getProfileUser() {
+        self::start();
+        return $_SESSION[self::NOMEDASESSAO]['perfil'] ?? null;
+    }    
+
     public static function isSessionActive() {
         self::start();
         return isset($_SESSION[self::NOMEDASESSAO]) && $_SESSION[self::NOMEDASESSAO]['idUsuario'] > 0;
