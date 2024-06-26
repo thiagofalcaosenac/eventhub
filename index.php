@@ -114,23 +114,42 @@ try {
 
             <div class="row gy-4" data-aos="fade-up" data-aos-delay="300">
 
+            <?php
+            include './database/connection.php';
+
+            $usuarioCount = $espacosCount = $eventosCount = 0;
+
+            try{
+              $stmt = $pdo->query('SELECT COUNT(*) FROM usuario');
+              $usuarioCount = $stmt->fetchColumn();
+
+              $stmt = $pdo->query('SELECT COUNT(*) FROM espacos');
+              $espacosCount = $stmt->fetchColumn();
+
+              $stmt = $pdo->query('SELECT COUNT(*) FROM eventos');
+              $eventosCount = $stmt->fetchColumn();
+            }catch(PDOException $e){
+              echo "Database error: " . $e->getMessage();    
+              $usuarioCount = $espacosCount = $eventosCount = "Erro";   
+            }
+            ?>
               <div class="col-lg-3 col-6">
                 <div class="stats-item text-center w-100 h-100">
-                  <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="0" class="purecounter">232</span>
+                  <span id="usuarioCount"><?php echo $usuarioCount; ?></span>
                   <p>Usuários</p>
                 </div>
               </div><!-- End Stats Item -->
 
               <div class="col-lg-3 col-6">
                 <div class="stats-item text-center w-100 h-100">
-                  <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="0" class="purecounter">521</span>
+                  <span id="espacosCount"><?php echo $espacosCount; ?></span>
                   <p>Espaços</p>
                 </div>
               </div><!-- End Stats Item -->
 
               <div class="col-lg-3 col-6">
                 <div class="stats-item text-center w-100 h-100">
-                  <span data-purecounter-start="0" data-purecounter-end="1453" data-purecounter-duration="0" class="purecounter">1453</span>
+                  <span id="eventosCount"><?php echo $eventosCount; ?></span>
                   <p>Eventos</p>
                 </div>
               </div><!-- End Stats Item -->
