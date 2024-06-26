@@ -96,6 +96,8 @@ try {
 
   <!-- Main CSS File -->
   <link href="../assets/css/main.css" rel="stylesheet">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body class="get-a-quote-page">
@@ -198,6 +200,20 @@ try {
 
                 <div class="col-md-12">
                   <input type="text" name="endereco" class="form-control" placeholder="Endereço" required>
+                  <script>
+                    document.querySelector('[name="endereco"]').addEventListener('change', function(event) {
+                        var endereco = this.value;
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', 'AIzaSyAfYZ4zXMMTsUxzhwvzVtGFzxc-ZYjizvg', true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.onload = function() {
+                            if (this.status == 200) {
+                                document.getElementById('storemapper').innerHTML = this.responseText;
+                            }
+                        };
+                        xhr.send('endereco=' + encodeURIComponent(endereco));
+                    });
+                  </script>
                 </div>
 
                 <div class="col-md-12">
@@ -212,18 +228,20 @@ try {
                   <input type="file" name="foto" class="form-control" placeholder="Foto">
                 </div>
 
-                <!-- APIKEU DO GOOGLE PARA O MAPA -> AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg -->
-                <!-- <div class="col-md-12 text-center">
-                  <iframe
-                    width="450"
-                    height="250"
-                    frameborder="0" style="border:0"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg&q=Eiffel+Tower,Paris+France"
-                    allowfullscreen>
-                  </iframe>
-                </div> -->
-
+                <!-- APIKEU DO GOOGLE PARA O MAPA -> AIzaSyAfYZ4zXMMTsUxzhwvzVtGFzxc-ZYjizvg -->
+                <div class="col-md-12 text-center">
+                  <div id='storemapper' style='width:100%;'>
+                    <script data-storemapper-start='2024,06,26'
+                            data-storemapper-id='26901-9GjVxgoO0ochNmSt'>
+                            (function() {var script = document.createElement('script');
+                              script.type  = 'text/javascript';script.async = true;
+                              script.src = 'https://www.storemapper.co/js/widget-3.min.js';
+                              var entry = document.getElementsByTagName('script')[0];
+                              entry.parentNode.insertBefore(script, entry);}
+                            ());
+                    </script>
+                  </div>
+                </div>
                 <div class="col-md-12 text-center">
                   <?php
                     echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
