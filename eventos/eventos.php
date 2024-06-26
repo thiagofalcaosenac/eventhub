@@ -79,6 +79,7 @@ try {
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
 
   <!-- Vendor CSS Files -->
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -89,10 +90,66 @@ try {
 
   <!-- Main CSS File -->
   <link href="../assets/css/main.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $("#spaceSelector").change(function() {
+      $.ajax({
+          data: {
+            idEspaco: $("#spaceSelector").val(),
+            dataHoraInicial: $("#dataHoraInicial").val(),
+            dataHoraFinal: $("#dataHoraFinal").val()
+          },
+          url: 'CalcularPrecoTotal.php',
+          type: 'POST',
+          success:function(response) {
+            $("#precoTotal").val(response);
+          }
+      });
+    });
+
+
+    $("#dataHoraInicial").change(function() {
+      $.ajax({
+          data: {
+            idEspaco: $("#spaceSelector").val(),
+            dataHoraInicial: $("#dataHoraInicial").val(),
+            dataHoraFinal: $("#dataHoraFinal").val()
+          },
+          url: 'CalcularPrecoTotal.php',
+          type: 'POST',
+          success:function(response) {
+            $("#precoTotal").val(response);
+          }
+      });
+    });
+
+
+      $("#dataHoraFinal").change(function() {
+        $.ajax({
+            data: {
+              idEspaco: $("#spaceSelector").val(),
+              dataHoraInicial: $("#dataHoraInicial").val(),
+              dataHoraFinal: $("#dataHoraFinal").val()
+            },
+            url: 'CalcularPrecoTotal.php',
+            type: 'POST',
+            success:function(response) {
+              $("#precoTotal").val(response);
+            }
+        });            
+      });
+
+      $("#spaceSelector").trigger("change");
+      $("#dataHoraInicial").trigger("change");
+      $("#dataHoraFinal").trigger("change");
+    });
+  </script>
+
 </head>
 
 <body class="get-a-quote-page">
-
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center">
 
@@ -186,11 +243,11 @@ try {
                 </div>
 
                 <div class="col-md-12">
-                  <input type="datetime-local" name="dataHoraInicial" class="form-control" placeholder="Data/Hora Inicial" required>
+                  <input type="datetime-local" id="dataHoraInicial" name="dataHoraInicial" class="form-control" placeholder="Data/Hora Inicial" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="datetime-local" name="dataHoraFinal" class="form-control" placeholder="Data/Hora Final" required>
+                  <input type="datetime-local" id="dataHoraFinal" name="dataHoraFinal" class="form-control" placeholder="Data/Hora Final" required>
                 </div>
 
                 <div class="col-md-12">
@@ -214,8 +271,8 @@ try {
 
                 <!-- Aqui vai carregar os espaços cadastrados existentes no sistema. -->
                 <div class="col-md-12">
-                  <label for="id_espaco">Espaço:</label>
-                  <select id="id_espaco" name="id_espaco">
+                  <label for="spaceSelector">Espaço:</label>
+                  <select id="spaceSelector" name="id_espaco">
                   <?php
                     require_once('../database/connection.php');
 
@@ -229,11 +286,13 @@ try {
                   </select>
                 </div>
 
-                <!-- Nesse preço total, o calculo vai ser feito baseado na datahora inicial e final do evento,
-                cada diária vai multiplicar pelo preço contido no cadastro do espaço -->
-                <div class="col-md-12">
-                  <input type="text" name="precoTotal" class="form-control" placeholder="Preço Total" disabled>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">R$</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="0.00" id="precoTotal" name="precoTotal" disabled />
                 </div>
+
 
                 <div class="col-md-12 text-center">
                   <?php
@@ -332,7 +391,6 @@ try {
 
   <!-- Main JS File -->
   <script src="../assets/js/main.js"></script>
-
 </body>
 
 </html>
