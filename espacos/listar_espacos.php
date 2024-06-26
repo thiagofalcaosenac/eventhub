@@ -120,7 +120,8 @@
       <div class="container">
 
         <form action="#" method="post" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
-          <input type="text" class="form-control" name="filtro" id="filtro" placeholder="Informe o endereço do local desejado">
+          <?php $nome = (!empty($_POST['filtro']) ? $_POST['filtro'] : ''); ?>
+          <input type="text" class="form-control" value="<?php echo $nome; ?>" name="filtro" id="filtro" placeholder="Informe o endereço do local desejado">
           <button type="submit" class="btn btn-primary">Buscar</button>
         </form>
 
