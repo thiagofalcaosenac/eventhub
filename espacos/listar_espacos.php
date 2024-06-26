@@ -119,7 +119,7 @@
 
       <div class="container">
 
-        <form action="#" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
+        <form action="#" method="post" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
           <input type="text" class="form-control" name="filtro" id="filtro" placeholder="Informe o endereço do local desejado">
           <button type="submit" class="btn btn-primary">Buscar</button>
         </form>
@@ -130,10 +130,14 @@
           try {
               require_once '../database/connection.php';
 
-              $filtro = $_POST['filtro'];
-              echo ($filtro);
+              if (isset($_POST['filtro'])) {
+                
+                  $filtro ='where endereco like  "%' . $_POST['filtro'] . '%"';
+              } else {
+                  $filtro = '';
+              }
 
-              $data = $pdo->prepare('SELECT * FROM espacos');
+              $data = $pdo->prepare('SELECT * FROM espacos '.$filtro);
               $data->execute();
 
               while ($row = $data->fetch()) {
