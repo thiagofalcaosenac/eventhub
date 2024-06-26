@@ -1,6 +1,8 @@
 <?php
 
 try {
+  require_once("./AtualizarAvaliacaoMedia.php");
+
   require_once("../sessao/Session.php");
   Session::start();
   $idUsuario = Session::getIdUser();
@@ -13,7 +15,7 @@ try {
       ) {
 
       // inclui o arquivo de conexão com o banco de dados
-      require_once("../database/connection.php");
+      include("../database/connection.php");
 
       // recebe os valores do formulário em variáveis locais
       $classificacao = $_POST['classificacao'];
@@ -21,20 +23,16 @@ try {
       $id_espaco = $_POST['id_espaco'];
 
       // cria a query de inserção no banco de dados
-      $sql = "INSERT INTO avaliacao (classificacao,comentario,id_espaco, id_usuario) VALUES (:classificacao,:comentario,:id_espaco,1)";
-      // prepara a query para ser executada
-      $pdo = $pdo->prepare($sql);
+      $sql = "INSERT INTO avaliacao (classificacao,comentario,id_espaco, id_usuario) VALUES (:classificacao,:comentario,:id_espaco,:id_usuario)";
+      $statement = $pdo->prepare($sql);
+      $statement->bindParam(":classificacao", $classificacao);
+      $statement->bindParam(":comentario", $comentario);
+      $statement->bindParam(":id_espaco", $id_espaco);
+      $statement->bindParam(":id_usuario", $idUsuario);
+      $statement->execute();
 
-      // substitui os parâmetros da query
-      $pdo->bindParam(":classificacao", $classificacao);
-      $pdo->bindParam(":comentario", $comentario);
-      $pdo->bindParam(":id_espaco", $id_espaco);
-      
-      // executa a query
-      $pdo->execute();
-      // verifica se a query foi executada com sucesso
-
-      if ($pdo->rowCount() == 1) {
+      if ($statement->rowCount() == 1) {
+          AtualizarAvaliacaoMedia::atualizarPorEspaco($id_espaco);
           $mensagem = "Avaliação inserida com sucesso!";
           header("Location: avaliacoes.php");
       } else {
@@ -177,7 +175,7 @@ try {
                   <label for="id_espaco">Espaço:</label>
                   <select id="id_espaco" name="id_espaco">
                   <?php
-                    require_once('../database/connection.php');
+                    include('../database/connection.php');
 
                     $data = $pdo->prepare('SELECT * FROM espacos');
                     $data->execute();
