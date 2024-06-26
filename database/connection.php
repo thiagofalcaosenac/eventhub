@@ -2,7 +2,7 @@
 
 $hostname = "localhost";
 $user = "root";
-$password = "senac";
+$password = "";
 $database = "eventhub";
 
 $chave = "zXW3x14WYB"; // SELECT MD5 (CONCAT ('SENHADOUSUARIO', 'zXW3x14WYB')) AS md5_string;
