@@ -147,18 +147,25 @@
                 echo "<div class='card-img'>";
                 echo '<img class="img-fluid" src="data:image/jpeg;base64,'.base64_encode($row['foto']).'" />';
                 echo "</div>";
+                echo "<div class='card-body'>";
                 if (!(isset($idUsuario))) {
-                  echo "<h3>" . $row['nome'] . "</h3>";
+                  echo '<h3 class="card-title">' . $row['nome'] . "</h3>";
                 } else {
                   if (isset($perfil) && $perfil == 'L') {
-                    echo "<h3>" . $row['nome'] . "</h3>"; 
+                    echo '<h3 class="card-title">' . $row['nome'] . "</h3>"; 
                   } else {
                     echo "<a href='atualizar_espaco.php?idEspaco=" . $row['id'] . "'>";
-                    echo "<h3><i class='glyphicon glyphicon-edit'>" . $row['nome'] . "</i></h3>";
+                    echo '<h3 class="card-title"><i class="glyphicon glyphicon-edit">' . $row['nome'] . "</i></h3>";
                     echo '</a>';
                   }
                 }
                 echo "<p> Descrição: " . $row['descricao'] . "</p>";
+                echo "<form action='/eventhub/eventos/eventos.php' method='post' style='display:none;' id='form_".$row['id']."'>";
+                echo ' <input type="hidden" name="id" value="'.$row['id'].'">';
+                echo "</form>";
+                echo '<a  class="btn btn-primary" onclick="document.getElementById(\'form_'.$row['id'].'\').submit();">Realizar Evento</a>';
+
+                echo "</div>";
                 echo "</div>";
                 echo "</div>";
               }

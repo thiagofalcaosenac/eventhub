@@ -276,11 +276,21 @@ try {
                   <?php
                     require_once('../database/connection.php');
 
+                    if (isset($_POST['id'])) {
+                      $espacoSelecionado = $_POST['id'];
+                    } else {
+                      $espacoSelecionado = '';
+                    }
+
                     $data = $pdo->prepare('SELECT * FROM espacos');
                     $data->execute();
 
                     while ($row = $data->fetch()) {
-                      echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['descricao'] . "</option>";
+                      if ($row['id'] == $espacoSelecionado) {
+                        echo "<option value='". $row['id'] ."' selected>" . $row['id'] . " - " . $row['nome'] . "</option>";
+                      } else {
+                        echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['nome'] . "</option>";    
+                      }
                     }
                   ?>
                   </select>
