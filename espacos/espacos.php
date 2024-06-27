@@ -77,7 +77,7 @@ try {
   <title>EventHub</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
-
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' maps.googleapis.com; style-src 'self' 'unsafe-inline' maps.googleapis.com; img-src 'self' data: maps.gstatic.com maps.googleapis.com; connect-src 'self' maps.googleapis.com; font-src 'self' fonts.gstatic.com;">
   <!-- Favicons -->
   <link href="../assets/img/favicon.png" rel="icon">
   <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
@@ -198,23 +198,7 @@ try {
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="endereco" class="form-control" placeholder="Endereço" required>
-                  <script>
-                  document.querySelector('[name="endereco"]').addEventListener('change', function(event) {
-                    var endereco = this.value;
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', 'AIzaSyAfYZ4zXMMTsUxzhwvzVtGFzxc-ZYjizvg', true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    
-                    xhr.onload = function() {
-                      if (this.status == 200) {
-                        document.getElementById('storemapper').innerHTML = this.responseText;
-                      }
-                    };
-                    
-                    xhr.send('endereco=' + encodeURIComponent(endereco));
-                  });
-                  </script>
+                  <input type="text" name="endereco" class="form-control" placeholder="Endereço" onblur="geocodeAddress()" required>
                 </div>
 
                 <div class="col-md-12">
@@ -229,20 +213,57 @@ try {
                   <input type="file" name="foto" class="form-control" placeholder="Foto">
                 </div>
 
-                <!-- APIKEU DO GOOGLE PARA O MAPA -> AIzaSyAfYZ4zXMMTsUxzhwvzVtGFzxc-ZYjizvg -->
+                <!-- APIKEU DO GOOGLE PARA O MAPA -> AIzaSyDDq9B9LG7gdS-Ok3qvPrfJT_tnDqzyho0 -->
                 <div class="col-md-12 text-center">
-                  <div id='storemapper' style='width:100%;'>
-                    <script data-storemapper-start='2024,06,26'
-                            data-storemapper-id='26901-9GjVxgoO0ochNmSt'>
-                            (function() {var script = document.createElement('script');
-                              script.type  = 'text/javascript';script.async = true;
-                              script.src = 'https://www.storemapper.co/js/widget-3.min.js';
-                              var entry = document.getElementsByTagName('script')[0];
-                              entry.parentNode.insertBefore(script, entry);}
-                            ());
+                  <iframe width="450"
+                    height="250"
+                    frameborder="0" style="border:0"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDq9B9LG7gdS-Ok3qvPrfJT_tnDqzyho0"
+                    allowfullscreen>
+                    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDq9B9LG7gdS-Ok3qvPrfJT_tnDqzyho0" async defer></script>
+                    <script>
+                      var map;
+                      var geocoder;
+
+                      function initMap() {
+                          geocoder = new google.maps.Geocoder();
+                          var saoPaulo = {lat: -23.5489, lng: -46.6388};
+                          map = new google.maps.Map(document.getElementById('map'), {
+                              center: saoPaulo,
+                              zoom: 15
+                          });
+                      }
+                      function geocodeAddress() {
+                          var address = document.getElementById('endereco').value;
+                          geocoder.geocode({'address': address}, function(results, status) {
+                              if (status === 'OK') {
+                                  map.setCenter(results[0].geometry.location);
+                                  var marker = new google.maps.Marker({
+                                      map: map,
+                                      position: results[0].geometry.location
+                                  });
+                              } else {
+                                  alert('Geocode não foi bem sucedido pelo seguinte motivo: ' + status);
+                              }
+                          });
+                      }
                     </script>
+                    <div id='storemapper' style='width:100%;'>
+                    <script data-storemapper-start='2024,06,26' data-storemapper-id='26901-9GjVxgoO0ochNmSt'>
+                            (function() {
+                                var script = document.createElement('script');
+                                script.type  = 'text/javascript';
+                                script.async = true;
+                                script.src = 'https://www.storemapper.co/js/widget-3.min.js';
+                                var entry = document.getElementsByTagName('script')[0];
+                                entry.parentNode.insertBefore(script, entry);
+                            })();
+                        </script>
+                    </div>
+                  </iframe>
                   </div>
-                </div>
+              </div>
                 <div class="col-md-12 text-center">
                   <?php
                     echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
