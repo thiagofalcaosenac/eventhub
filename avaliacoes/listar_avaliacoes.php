@@ -8,8 +8,8 @@ try {
   $idUsuario = Session::getIdUser();
   $perfil = Session::getProfileUser();
 
-  if (isset($_POST['idEspaco'])) {
-    $idEspaco = $_POST['idEspaco'];
+  if (isset($_GET['idEspaco'])) {
+    $idEspaco = $_GET['idEspaco'];
   } else {
     $idEspaco = NULL;
   }
@@ -51,19 +51,17 @@ try {
   <!-- Main CSS File -->
   <link href="../assets/css/main.css" rel="stylesheet">
 
-  <script type="text/javascript">
+  <!-- <script type="text/javascript">
     $(document).ready(function() {
       $("#spaceSelector").change(function() {
+        // $idEspaco = 6;
         // alert($("#spaceSelector").val());
-        // $.post('listar_avaliacoes.php', $("#spaceSelector").val(), function(data){
-        // window.location.href=window.location.href;  
-        // });            
-        // $.post( "listar_avaliacoes.php", { idUsuario: $("#spaceSelector").val() } );
+        // $("#gridAvaliacoes").load(window.location.href + " #gridAvaliacoes" );
       });
 
       $("#spaceSelector").trigger("change");
     });
-  </script>
+  </script> -->
 
 </head>
 
@@ -150,7 +148,11 @@ try {
                       $dataEspacos->execute();
 
                       while ($row = $dataEspacos->fetch()) {
-                        echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['descricao'] . "</option>";
+                        if ($row['id'] == $idEspaco) {
+                          echo "<option value='". $row['id'] ."' selected>" . $row['id'] . " - " . $row['descricao'] . "</option>";
+                        } else {
+                          echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['descricao'] . "</option>";
+                        }
                       }
                     ?>
                   </select>
@@ -169,7 +171,6 @@ try {
                     $filtro = '';
                 }
 
-                echo $filtro;
                 $data = $pdo->prepare('SELECT * FROM avaliacao '.$filtro);
                 $data->execute();
 

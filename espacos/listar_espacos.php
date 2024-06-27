@@ -35,6 +35,13 @@
 
   <!-- Main CSS File -->
   <link href="../assets/css/main.css" rel="stylesheet">
+
+  <script>
+      function abrirTelaListarAvaliacoes(idEspaco) {
+        window.open("../avaliacoes/listar_avaliacoes.php?idEspaco=" + idEspaco);
+      }
+  </script>
+
 </head>
 
 <body class="get-a-quote-page">
@@ -163,7 +170,9 @@
                 echo "<form action='/eventhub/eventos/eventos.php' method='post' style='display:none;' id='form_".$row['id']."'>";
                 echo ' <input type="hidden" name="id" value="'.$row['id'].'">';
                 echo "</form>";
-                echo '<a  class="btn btn-primary" onclick="document.getElementById(\'form_'.$row['id'].'\').submit();">Realizar Evento</a>';
+                echo '<a class="btn btn-primary" onclick="abrirTelaListarAvaliacoes('. $row['id'] .')">Avaliações</a>';
+                echo '&nbsp;';
+                echo '<a class="btn btn-primary" onclick="document.getElementById(\'form_'.$row['id'].'\').submit();">Realizar Evento</a>';
 
                 echo "</div>";
                 echo "</div>";
