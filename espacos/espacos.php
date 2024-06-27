@@ -175,7 +175,6 @@ try {
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
             <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
               <!-- Espaço - id(PK), nome, descricao, capacidade, endereco, preco, comodidades, avaliacaoMedia, foto, id_usuario(FK) -->
-
               <div class="row gy-4">
 
                 <div class="col-lg-12">
@@ -201,18 +200,20 @@ try {
                 <div class="col-md-12">
                   <input type="text" name="endereco" class="form-control" placeholder="Endereço" required>
                   <script>
-                    document.querySelector('[name="endereco"]').addEventListener('change', function(event) {
-                        var endereco = this.value;
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('POST', 'AIzaSyAfYZ4zXMMTsUxzhwvzVtGFzxc-ZYjizvg', true);
-                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                        xhr.onload = function() {
-                            if (this.status == 200) {
-                                document.getElementById('storemapper').innerHTML = this.responseText;
-                            }
-                        };
-                        xhr.send('endereco=' + encodeURIComponent(endereco));
-                    });
+                  document.querySelector('[name="endereco"]').addEventListener('change', function(event) {
+                    var endereco = this.value;
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', 'AIzaSyAfYZ4zXMMTsUxzhwvzVtGFzxc-ZYjizvg', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    
+                    xhr.onload = function() {
+                      if (this.status == 200) {
+                        document.getElementById('storemapper').innerHTML = this.responseText;
+                      }
+                    };
+                    
+                    xhr.send('endereco=' + encodeURIComponent(endereco));
+                  });
                   </script>
                 </div>
 
