@@ -2,44 +2,17 @@
 
 try {
   require_once("./AtualizarAvaliacaoMedia.php");
-
+  require_once '../database/connection.php';
   require_once("../sessao/Session.php");
   Session::start();
   $idUsuario = Session::getIdUser();
   $perfil = Session::getProfileUser();
 
-  // verifica se os campos foram preenchidos e se o formulário foi enviado
-  if (isset($_POST['classificacao']) && 
-      isset($_POST['comentario']) && 
-      isset($_POST['id_espaco'])
-      ) {
-
-      // inclui o arquivo de conexão com o banco de dados
-      include("../database/connection.php");
-
-      // recebe os valores do formulário em variáveis locais
-      $classificacao = $_POST['classificacao'];
-      $comentario = $_POST['comentario'];
-      $id_espaco = $_POST['id_espaco'];
-
-      // cria a query de inserção no banco de dados
-      $sql = "INSERT INTO avaliacao (classificacao,comentario,id_espaco, id_usuario) VALUES (:classificacao,:comentario,:id_espaco,:id_usuario)";
-      $statement = $pdo->prepare($sql);
-      $statement->bindParam(":classificacao", $classificacao);
-      $statement->bindParam(":comentario", $comentario);
-      $statement->bindParam(":id_espaco", $id_espaco);
-      $statement->bindParam(":id_usuario", $idUsuario);
-      $statement->execute();
-
-      if ($statement->rowCount() == 1) {
-          AtualizarAvaliacaoMedia::atualizarPorEspaco($id_espaco);
-          $mensagem = "Avaliação inserida com sucesso!";
-          header("Location: avaliacoes.php");
-      } else {
-          $mensagem = "Erro ao inserir avaliação!";
-      }
+  if (isset($_POST['idEspaco'])) {
+    $idEspaco = $_POST['idEspaco'];
+  } else {
+    $idEspaco = NULL;
   }
-
 } catch (Exception $e) {
   echo 'Exceção capturada: ',  $e->getMessage(), "\n";
 }
@@ -63,6 +36,10 @@ try {
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
   <!-- Vendor CSS Files -->
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -73,6 +50,21 @@ try {
 
   <!-- Main CSS File -->
   <link href="../assets/css/main.css" rel="stylesheet">
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $("#spaceSelector").change(function() {
+        // alert($("#spaceSelector").val());
+        // $.post('listar_avaliacoes.php', $("#spaceSelector").val(), function(data){
+        // window.location.href=window.location.href;  
+        // });            
+        // $.post( "listar_avaliacoes.php", { idUsuario: $("#spaceSelector").val() } );
+      });
+
+      $("#spaceSelector").trigger("change");
+    });
+  </script>
+
 </head>
 
 <body class="get-a-quote-page">
@@ -132,12 +124,12 @@ try {
     <!-- Page Title -->
     <div class="page-title position-relative" data-aos="fade" style="background-image: url(../assets/img/page-title-bg.jpg);">
       <div class="container position-relative">
-        <h1 class="">Tela de Avaliações</h1>
-        <p>Nesta tela é possível realizar a manipulação de dados da avaliação</p>
+        <h1 class="">Listagem das Avaliações</h1>
+        <p>Nesta tela é possível visualizar os dados das avaliações</p>
         <nav class="breadcrumbs">
           <ol>
             <li><a href="../index.php">Home</a></li>
-            <li class="current">Tela de Avaliações</li>
+            <li class="current">Listagem das Avaliações</li>
           </ol>
         </nav>
       </div>
@@ -146,67 +138,65 @@ try {
     <!-- Get A Quote Section -->
     <section id="get-a-quote" class="get-a-quote section">
 
-      <div class="container">
+    <div class="container">
+      <div class="row g-0">
+        <div class="col-lg-7">
+            <div class="row gy-4">
+              <div class="col-md-12">
+                  <label for="spaceSelector">Espaço:</label>
+                  <select id="spaceSelector" name="id_espaco">
+                    <?php
+                      $dataEspacos = $pdo->prepare('SELECT * FROM espacos');
+                      $dataEspacos->execute();
 
-        <div class="row g-0" data-aos="fade-up" data-aos-delay="100">
-
-          <div class="col-lg-5 quote-bg" style="background-image: url(../assets/img/quote-bg.jpg);"></div>
-
-          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-            <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
-              <!-- Avaliação - id (PK), classificacao, comentario, id_usuario(FK), id_espaco(FK) -->
-
-              <div class="row gy-4">
-
-                <div class="col-lg-12">
-                  <h4>Informe dados para avaliação</h4>
-                </div>
-
-                <div class="col-md-12">
-                  <input type="text" name="id" class="form-control" placeholder="Id" readonly hidden>
-                </div>
-
-                <div class="col-md-12">
-                  <input type="number" min="1" max="10" name="classificacao" class="form-control" placeholder="Classificação de 1 a 10" required>                  
-                </div>
-
-                <div class="col-md-12">
-                  <textarea class="form-control" name="comentario" rows="6" placeholder="Comentário" required=""></textarea>
-                </div>
-
-                <!-- Aqui vai carregar os espaços cadastrados existentes no sistema. -->
-
-                <div class="col-md-12">
-                  <label for="id_espaco">Espaço:</label>
-                  <select id="id_espaco" name="id_espaco">
-                  <?php
-                    include('../database/connection.php');
-
-                    $data = $pdo->prepare('SELECT * FROM espacos');
-                    $data->execute();
-
-                    while ($row = $data->fetch()) {
-                      echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['descricao'] . "</option>";
-                    }
-                  ?>
+                      while ($row = $dataEspacos->fetch()) {
+                        echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['descricao'] . "</option>";
+                      }
+                    ?>
                   </select>
                 </div>
-
-                <div class="col-md-12 text-center">
-                  <?php
-                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
-                  ?>
-
-                  <button type="submit">Salvar</button>
-                </div>
-
-              </div>
-            </form>
-          </div><!-- End Quote Form -->
-
+            </div>
         </div>
-
       </div>
+    </div>
+
+    <div id="gridAvaliacoes">
+        <?php           
+            try {
+                if (isset($idEspaco)) {
+                    $filtro = 'where id_espaco =  ' . $idEspaco;
+                } else {
+                    $filtro = '';
+                }
+
+                echo $filtro;
+                $data = $pdo->prepare('SELECT * FROM avaliacao '.$filtro);
+                $data->execute();
+
+                echo '<div class="container">';
+                echo '<div class="row">';
+      
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-1 border" style="background-color:#DCDCDC;"><h4>Id</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-2 border" style="background-color:#DCDCDC;"><h4>Nome do Espaço</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-2 border" style="background-color:#DCDCDC;"><h4>Classificação</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-7 border" style="background-color:#DCDCDC;"><h4>Comentário</h4></div>';
+
+                while ($row = $data->fetch()) {
+                  $nomeEspaco = $pdo->query('select nome from espacos where id = ' . $row['id_espaco'])->fetchColumn(); 
+
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-1 border" style="background-color:#FFFAFA;">' . $row['id'] . '</div>';
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-2 border" style="background-color:#FFFAFA;">' . $nomeEspaco . '</div>';
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-2 border" style="background-color:#FFFAFA;">' . $row['classificacao'] . '</div>';
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-7 border" style="background-color:#FFFAFA;">' . $row['comentario'] . '</div>';
+                }
+
+                echo '</div>';
+                echo '</div>';
+            } catch (Exception $e) {
+              echo 'Exceção capturada: ',  $e->getMessage(), "\n";
+            }
+          ?>
+    </div>
 
     </section><!-- /Get A Quote Section -->
 
