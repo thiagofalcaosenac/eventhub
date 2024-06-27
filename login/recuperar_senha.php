@@ -1,37 +1,46 @@
 <?php
 try {
-  require_once("../sessao/Session.php");
-  Session::start();
-
-  if (isset($_POST['typeEmailX']) && isset($_POST['typePasswordX'])) {
-      // inclui o arquivo de conexão com o banco de dados
-      include("../database/connection.php");
-
-      // recebe os valores do formulário em variáveis locais
-      $email = $_POST['typeEmailX'];
-      $senha = $_POST['typePasswordX'];
-
-      $sql = "SELECT * FROM usuario WHERE email = :email AND senha = :senha";
-      $pdo = $pdo->prepare($sql);
-
-      // substitui os parâmetros da query
-      $pdo->bindParam(":email", $email);
-      $pdo->bindParam(":senha", $senha);
-
-      // executa a query
-      $pdo->execute();
-
-      if ($pdo->rowCount() == 1) {
-          $usuario = $pdo->fetch();
-          Session::set('eventhub', [
-            'idUsuario' => $usuario['id'],
-            'perfil' => $usuario['tipo'],
-          ]);
-          header("Location: ../index.php");
-      } else {
-          $mensagem = "Usuário ou senha inválidos!";
-      }
-  }
+//   require_once("../sessao/Session.php");
+//   Session::start();
+ 
+ 
+    if (isset($_GET['email'])) {
+        include("../database/connection.php");
+        $email = $_GET['email']; 
+    
+        $sql = "SELECT * FROM usuario WHERE email = :email";
+        $pdo = $pdo->prepare($sql);
+        $pdo->bindParam(":email", $email);
+        $pdo->execute();
+        if ($pdo->rowCount() == 0) {
+            $mensagem = "E-mail não encontrado!";
+        }
+    }  
+    if (isset($_POST['typeEmailX']) && isset($_POST['typeSenhaX']) && isset($_POST['typeConfirmarSenhaX'])) {
+        // inclui o arquivo de conexão com o banco de dados
+        include("../database/connection.php");
+        if ($_POST['typeSenhaX'] != $_POST['typeConfirmarSenhaX']) {
+            $mensagem = "Certifique-se de que digitou a mesma senha nos dois campos e tente novamente.";
+        }
+        
+        $email = $_POST['typeEmailX'];
+        $senha = $_POST['typeSenhaX'];
+    
+        $sql = "UPDATE usuario SET senha = :senha WHERE email = :email ";
+        $pdo = $pdo->prepare($sql);
+    
+        // // substitui os parâmetros da query
+        $pdo->bindParam(":email", $email);
+        $pdo->bindParam(":senha", $senha);
+    
+        // // executa a query
+        $pdo->execute();
+    
+        if ($pdo->rowCount() == 1) {
+            $mensagemSucesso = "Senha redefinida com sucesso!\nVocê pode agora usar sua nova senha para fazer login.";
+        }
+    }
+    
 } catch (Exception $e) {
   echo 'Exceção capturada: ',  $e->getMessage(), "\n";
 }
@@ -111,46 +120,53 @@ try {
     
                 <div class="mb-md-5 mt-md-4 pb-5">
     
-                  <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
-                  <p class="text-black-50 mb-5">Entre com seu email e senha</p>
+                  <h2 class="fw-bold mb-2 text-uppercase">Recuperação de Senha</h2>
+                  <p class="text-black-50 mb-5">Esqueceu sua senha? Por favor, digite seu e-mail e crie uma nova senha abaixo.</p>
 
                   <div>
                     <p class="mb-0">
                     <?php
-                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
+                    echo (isset($mensagem)) ? "<div class='alert alert-danger' role='alert'>$mensagem</div>" : "";
+                    ?>
+                     <?php
+                    echo (isset($mensagemSucesso)) ? "<div class='alert alert-success' role='alert'>$mensagemSucesso</div>" : "";
                     ?>
                     </p>
                   </div>
 
                   <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
                     <div data-mdb-input-init class="form-outline form-black mb-4">
-                      <input type="email" name="typeEmailX" id="typeEmailX" class="form-control form-control-lg" required />
-                      <label class="form-label" for="typeEmailX">Email</label>
+                        <label class="form-label" for="typeEmailX">Digite seu e-mail:</label>  
+                        <input type="email" name="typeEmailX" id="typeEmailX" class="form-control form-control-lg" required value="<?php echo isset($_GET['email']) ? $_GET['email'] : '';?>" />
                     </div>
-      
+            
                     <div data-mdb-input-init class="form-outline form-black mb-4">
-                      <input type="password" name="typePasswordX" id="typePasswordX" class="form-control form-control-lg" required />
-                      <label class="form-label" for="typePasswordX">Senha</label>
+                        <label class="form-label" for="typeSenhaX">Digite uma nova senha:</label>  
+                        <input type="password" name="typeSenhaX" id="typeSenhaX" class="form-control form-control-lg" required />
                     </div>
-      
-                    <p class="small mb-5 pb-lg-2"><a class="text-black-50" href="#" id="forgotPasswordLink">Esqueceu a senha?</a></p>
-      
-                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-dark btn-lg px-5" type="submit">Login</button>
-                  </form>
-                </div>
-    
-                <div class="col-md-12 text-center">
 
-                <div>
-                  <p class="mb-0">Não tem uma conta? <a href="usuario/usuario.php" class="text-black-50 fw-bold">Registre-se!</a>
-                  </p>
+                    <div data-mdb-input-init class="form-outline form-black mb-4">
+                        <label class="form-label" for="typeConfirmarSenhaX">Confirme sua nova senha:</label>  
+                        <input type="password" name="typeConfirmarSenhaX" id="typeConfirmarSenhaX" class="form-control form-control-lg" required />
+                    </div>
+
+                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-dark btn-lg px-5" type="submit">Redefinir Senha</button>
+                    <p class="mb-0">Lembrou sua senha? <a href="./login.php" class="text-black-50 fw-bold">Voltar ao login</a></p>
+                    </form>
                 </div>
     
-              </div>
+                    <div class="col-md-12 text-center">
+
+                        <div>
+                        <p class="mb-0">Não tem uma conta? <a href="usuario/usuario.php" class="text-black-50 fw-bold">Registre-se!</a>
+                        </p>
+                        </div>
+    
+                    </div>
+                </div>
             </div>
-          </div>
+            </div>
         </div>
-      </div>
     </section>
 
   </main>
@@ -182,18 +198,6 @@ try {
   <!-- Main JS File -->
   <script src="../assets/js/main.js"></script>
 
-
-  <script>
-    document.getElementById('forgotPasswordLink').addEventListener('click', function(event) {
-        event.preventDefault();
-        const email = document.getElementById('typeEmailX').value;
-        if (email) {
-            window.location.href = `./recuperar_senha.php?email=${encodeURIComponent(email)}`;
-        } else {
-            window.location.href = `./recuperar_senha.php`;
-        }
-    });
-  </script>
 </body>
 
 </html>
