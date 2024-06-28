@@ -34,9 +34,17 @@ try {
   <link href="assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
+
+  <script>
+    function abrirTelaListarEspacos() {
+        window.open("./espacos/listar_espacos.php?filtroIndex=" + $('#endereco').val());
+    }
+  </script>
 </head>
 
 <body class="index-page">
@@ -113,10 +121,12 @@ try {
               Um marketplace para divulgação de espaços para eventos é uma plataforma online que conecta proprietários de locais com organizadores de eventos, oferecendo maior visibilidade e ferramentas de gerenciamento para os proprietários, enquanto facilita a busca, comparação e reserva de espaços ideais para os organizadores, criando uma ponte eficiente entre oferta e demanda e beneficiando ambas as partes.              
             </p>
 
-            <form action="./espacos/listar_espacos.php" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
-              <input type="text" class="form-control" placeholder="Informe o endereço do local desejado" required>
-              <button type="submit" class="btn btn-primary">Buscar</button>
-            </form>
+            <?php
+            echo '<form class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">';
+            echo '<input type="text" class="form-control" id="endereco" placeholder="Informe o endereço do local desejado" required>';
+            echo '<button onclick="abrirTelaListarEspacos()" class="btn btn-primary">Buscar</button>';
+            echo '</form>';
+            ?>
 
             <div class="row gy-4" data-aos="fade-up" data-aos-delay="300">
 
@@ -285,7 +295,6 @@ try {
 
   <!-- Vendor JS Files -->
   <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>

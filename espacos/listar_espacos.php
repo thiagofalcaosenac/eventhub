@@ -3,6 +3,10 @@
   Session::start();
   $idUsuario = Session::getIdUser();
   $perfil = Session::getProfileUser();
+
+  if (isset($_GET['filtroIndex'])) {
+    $_POST['filtro'] = $_GET['filtroIndex'];
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
