@@ -7,7 +7,13 @@ try {
   $perfil = Session::getProfileUser();
 
   // verifica se os campos foram preenchidos e se o formulário foi enviado
-  if (isset($_POST['titulo'])) {
+  if (isset($_POST['titulo']) && 
+      isset($_POST['descricao']) && 
+      isset($_POST['dataHoraInicial']) &&
+      isset($_POST['dataHoraFinal']) && 
+      isset($_POST['status']) &&
+      isset($_POST['tipo']) && 
+      isset($_POST['id_espaco'])) {
 
       // inclui o arquivo de conexão com o banco de dados
       include("../database/connection.php");
