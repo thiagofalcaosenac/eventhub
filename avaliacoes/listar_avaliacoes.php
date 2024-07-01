@@ -142,39 +142,13 @@ try {
     <!-- Get A Quote Section -->
     <section id="get-a-quote" class="get-a-quote section">
 
-    <div class="container">
-      <div class="row g-0">
-        <div class="col-lg-7">
-            <div class="row gy-4">
-              <div class="col-md-12">
-                  <label for="spaceSelector">Espaço:</label>
-                  <select id="spaceSelector" name="id_espaco">
-                    <?php
-                      $dataEspacos = $pdo->prepare('SELECT * FROM espacos');
-                      $dataEspacos->execute();
-
-                      while ($row = $dataEspacos->fetch()) {
-                        if ($row['id'] == $idEspaco) {
-                          echo "<option value='". $row['id'] ."' selected>" . $row['id'] . " - " . $row['descricao'] . "</option>";
-                        } else {
-                          echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['descricao'] . "</option>";
-                        }
-                      }
-                    ?>
-                  </select>
-                </div>
-            </div>
-        </div>
-      </div>
-    </div>
-
     <div id="gridAvaliacoes">
         <?php           
             try {
                 if (isset($idEspaco)) {
-                    $filtro = 'where id_espaco =  ' . $idEspaco;
+                    $filtro = 'where id_espaco =  ' . $idEspaco . ' order by id_espaco, classificacao desc';
                 } else {
-                    $filtro = '';
+                    $filtro = ' order by id_espaco, classificacao desc';
                 }
 
                 $data = $pdo->prepare('SELECT * FROM avaliacao '.$filtro);

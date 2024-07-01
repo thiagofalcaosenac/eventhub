@@ -34,7 +34,7 @@ try {
       if ($statement->rowCount() == 1) {
           AtualizarAvaliacaoMedia::atualizarPorEspaco($id_espaco);
           $mensagem = "Avaliação inserida com sucesso!";
-          header("Location: avaliacoes.php");
+          header("Location: listar_avaliacoes.php");
       } else {
           $mensagem = "Erro ao inserir avaliação!";
       }

@@ -204,19 +204,21 @@ try {
 
                   if ($row['status'] == 'F') {
                     echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">
-                    <a id="myLink" title="Evento já finalizado!" onclick="eventoFinalizado()">
+                    <a id="myLink" style="cursor:pointer" title="Evento já finalizado!" onclick="eventoFinalizado()">
                     <span class="material-icons">check_circle</span>
                     </a>
-                    <a id="myLink" title="Avaliar Espaço" onclick="avaliarEspaco(' . $row['id_espaco'] . '); return false;">
+                    &nbsp;
+                    <a id="myLink" style="cursor:pointer" title="Avaliar Espaço" onclick="avaliarEspaco(' . $row['id_espaco'] . '); return false;">
                     <span class="material-icons">star_rate</span>
                     </a>
                     </div>';
                   } else {
                     echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">
-                    <a id="myLink" title="Clique para finalizar o Evento" onclick="finalizarEvento(' . $row['id'] . ');return false;">
+                    <a id="myLink" style="cursor:pointer" title="Clique para finalizar o Evento" onclick="finalizarEvento(' . $row['id'] . ');return false;">
                     <span class="material-icons">done</span>
                     </a>
-                    <a id="myLink" title="Avaliar Espaço" onclick="avaliarEspaco(' . $row['id_espaco'] . '); return false;">
+                    &nbsp;
+                    <a id="myLink" style="cursor:pointer" title="Avaliar Espaço" onclick="avaliarEspaco(' . $row['id_espaco'] . '); return false;">
                     <span class="material-icons">star_rate</span>
                     </a>                    
                     </div>';
