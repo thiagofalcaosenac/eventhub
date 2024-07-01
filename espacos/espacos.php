@@ -77,7 +77,6 @@ try {
   <title>EventHub</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
-
   <!-- Favicons -->
   <link href="../assets/img/favicon.png" rel="icon">
   <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
@@ -96,6 +95,11 @@ try {
 
   <!-- Main CSS File -->
   <link href="../assets/css/main.css" rel="stylesheet">
+
+  
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+
 </head>
 
 <body class="get-a-quote-page">
@@ -184,7 +188,6 @@ try {
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
             <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
               <!-- Espaço - id(PK), nome, descricao, capacidade, endereco, preco, comodidades, avaliacaoMedia, foto, id_usuario(FK) -->
-
               <div class="row gy-4">
 
                 <div class="col-lg-12">
@@ -208,7 +211,7 @@ try {
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="endereco" class="form-control" placeholder="Endereço" required>
+                  <input type="text" name="endereco" class="form-control" id="address" placeholder="Endereço" required>
                 </div>
 
                 <div class="col-md-12">
@@ -223,19 +226,51 @@ try {
                   <input type="file" name="foto" class="form-control" placeholder="Foto">
                 </div>
 
-                <!-- APIKEU DO GOOGLE PARA O MAPA -> AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg -->
-                <!-- <div class="col-md-12 text-center">
-                  <iframe
-                    width="450"
-                    height="250"
-                    frameborder="0" style="border:0"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg&q=Eiffel+Tower,Paris+France"
-                    allowfullscreen>
-                  </iframe>
-                </div> -->
-
+                <!-- APIKEU DO GOOGLE PARA O MAPA -> pk.eyJ1IjoicG9ueml0b3MiLCJhIjoiY2x4eXR6ZTI3MDR0NDJrbzYxMXpvcjhrMyJ9.S9nQmSkK94MDXpWQkCW7qw -->
                 <div class="col-md-12 text-center">
+                  <div id="map" style="width: 620px; height: 500px;">
+
+                  <script> 
+                   mapboxgl.accessToken = 'pk.eyJ1IjoicG9ueml0b3MiLCJhIjoiY2x4eXR6ZTI3MDR0NDJrbzYxMXpvcjhrMyJ9.S9nQmSkK94MDXpWQkCW7qw';
+
+                      var map = new mapboxgl.Map({
+                          container: 'map',
+                          style: 'mapbox://styles/mapbox/streets-v12',
+                          center: [-48.847977, -26.301477], 
+                          zoom: 9
+                      });
+
+                      function showAddressOnMap() {
+                          var address = document.getElementById('address').value;
+                          fetch('geocode.php?address=' + encodeURIComponent(address))
+                              .then(response => response.json())
+                              .then(data => {
+                                  if (data.features && data.features.length > 0) {
+                                      var coordinates = data.features[0].geometry.coordinates;
+                                      map.flyTo({
+                                          center: coordinates,
+                                          essential: true, 
+                                          zoom: 18
+                                        });
+                                        console.log(coordinates);
+
+                                      
+                                      const marker = new mapboxgl.Marker()
+                                          .setLngLat(coordinates)
+                                          .addTo(map);
+                                  } else {
+                                      alert('Address not found');
+                                  }
+                              });
+                            }
+
+                            const endereco = document.getElementById('address')
+                            endereco.addEventListener('blur', showAddressOnMap)
+                      </script>
+                    </div>
+                  </div>
+              </div>
+                <div class="col-md-12 text-center mt-2">
                   <?php
                     echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
                   ?>
