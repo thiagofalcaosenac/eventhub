@@ -83,7 +83,12 @@ try {
 
           <?php
             if (isset($idUsuario)) {
-              echo '<li><a href="./eventos/eventos.php">Eventos</a></li>';
+              echo '<li class="dropdown"><a href="#"><span>Eventos</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
+              echo '<ul>';
+              echo '<li><a href="./eventos/listar_eventos.php">Listagem</a></li>';
+              echo '<li><a href="./eventos/eventos.php">Cadastrar</a></li>';
+              echo '</ul>';
+              echo '</li>';
 
               echo '<li class="dropdown"><a class="active" href="#"><span>Avaliações</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
