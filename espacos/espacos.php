@@ -77,7 +77,6 @@ try {
   <title>EventHub</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' maps.googleapis.com; style-src 'self' 'unsafe-inline' maps.googleapis.com; img-src 'self' data: maps.gstatic.com maps.googleapis.com; connect-src 'self' maps.googleapis.com; font-src 'self' fonts.gstatic.com;">
   <!-- Favicons -->
   <link href="../assets/img/favicon.png" rel="icon">
   <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
@@ -97,7 +96,11 @@ try {
   <!-- Main CSS File -->
   <link href="../assets/css/main.css" rel="stylesheet">
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css" type="text/css">
+
 </head>
 
 <body class="get-a-quote-page">
@@ -198,7 +201,7 @@ try {
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="endereco" class="form-control" placeholder="Endereço" onblur="geocodeAddress()" required>
+                  <input type="text" name="endereco" class="form-control" id="address" placeholder="Endereço" required>
                 </div>
 
                 <div class="col-md-12">
@@ -213,55 +216,48 @@ try {
                   <input type="file" name="foto" class="form-control" placeholder="Foto">
                 </div>
 
-                <!-- APIKEU DO GOOGLE PARA O MAPA -> AIzaSyDDq9B9LG7gdS-Ok3qvPrfJT_tnDqzyho0 -->
+                <!-- APIKEU DO GOOGLE PARA O MAPA -> pk.eyJ1IjoicG9ueml0b3MiLCJhIjoiY2x4eXR6ZTI3MDR0NDJrbzYxMXpvcjhrMyJ9.S9nQmSkK94MDXpWQkCW7qw -->
                 <div class="col-md-12 text-center">
-                  <iframe width="450"
-                    height="250"
-                    frameborder="0" style="border:0"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDq9B9LG7gdS-Ok3qvPrfJT_tnDqzyho0"
-                    allowfullscreen>
-                    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDq9B9LG7gdS-Ok3qvPrfJT_tnDqzyho0" async defer></script>
-                    <script>
-                      var map;
-                      var geocoder;
+                  <div id="map" style="width: 620px; height: 500px;">
 
-                      function initMap() {
-                          geocoder = new google.maps.Geocoder();
-                          var saoPaulo = {lat: -23.5489, lng: -46.6388};
-                          map = new google.maps.Map(document.getElementById('map'), {
-                              center: saoPaulo,
-                              zoom: 15
-                          });
-                      }
-                      function geocodeAddress() {
-                          var address = document.getElementById('endereco').value;
-                          geocoder.geocode({'address': address}, function(results, status) {
-                              if (status === 'OK') {
-                                  map.setCenter(results[0].geometry.location);
-                                  var marker = new google.maps.Marker({
-                                      map: map,
-                                      position: results[0].geometry.location
-                                  });
-                              } else {
-                                  alert('Geocode não foi bem sucedido pelo seguinte motivo: ' + status);
-                              }
-                          });
-                      }
-                    </script>
-                    <div id='storemapper' style='width:100%;'>
-                    <script data-storemapper-start='2024,06,26' data-storemapper-id='26901-9GjVxgoO0ochNmSt'>
-                            (function() {
-                                var script = document.createElement('script');
-                                script.type  = 'text/javascript';
-                                script.async = true;
-                                script.src = 'https://www.storemapper.co/js/widget-3.min.js';
-                                var entry = document.getElementsByTagName('script')[0];
-                                entry.parentNode.insertBefore(script, entry);
-                            })();
-                        </script>
+                  <script> 
+                   mapboxgl.accessToken = 'pk.eyJ1IjoicG9ueml0b3MiLCJhIjoiY2x4eXR6ZTI3MDR0NDJrbzYxMXpvcjhrMyJ9.S9nQmSkK94MDXpWQkCW7qw';
+
+                      var map = new mapboxgl.Map({
+                          container: 'map',
+                          style: 'mapbox://styles/mapbox/streets-v12',
+                          center: [-74.5, 40], // Initial map center coordinates [lng, lat]
+                          zoom: 9 // Initial map zoom level
+                      });
+
+                      function showAddressOnMap() {
+                          var address = document.getElementById('address').value;
+                          fetch('geocode.php?address=' + encodeURIComponent(address))
+                              .then(response => response.json())
+                              .then(data => {
+                                  if (data.features && data.features.length > 0) {
+                                      var coordinates = data.features[0].geometry.coordinates;
+                                      map.flyTo({
+                                          center: coordinates,
+                                          essential: true, // this animation is considered essential with respect to prefers-reduced-motion
+                                          zoom: 14
+                                        });
+                                        console.log(coordinates);
+
+                                      
+                                      const marker = new mapboxgl.Marker()
+                                          .setLngLat(coordinates)
+                                          .addTo(map);
+                                  } else {
+                                      alert('Address not found');
+                                  }
+                              });
+                            }
+
+                            const endereco = document.getElementById('address')
+                            endereco.addEventListener('blur', showAddressOnMap)
+                      </script>
                     </div>
-                  </iframe>
                   </div>
               </div>
                 <div class="col-md-12 text-center">
