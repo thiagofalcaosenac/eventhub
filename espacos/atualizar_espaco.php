@@ -141,7 +141,7 @@ try {
               echo '<li class="dropdown"><a href="#" class="active"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
               echo '<li><a href="listar_espacos.php">Listagem</a></li>';
-              echo '<li><a href="espacos.php">Cadastro</a></li>';
+              echo '<li><a href="espacos.php">Cadastrar</a></li>';
               echo '</ul>';
               echo '</li>';
             }
@@ -158,8 +158,8 @@ try {
 
               echo '<li class="dropdown"><a href="#"><span>Avaliações</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
+              echo '<li><a href="../avaliacoes/listar_avaliacoes.php">Listagem</a></li>';
               echo '<li><a href="../avaliacoes/avaliacoes.php">Cadastrar</a></li>';
-              echo '<li><a href="../avaliacoes/listar_avaliacoes.php">Listar Avaliações</a></li>';
               echo '</ul>';
               echo '</li>';
             }
