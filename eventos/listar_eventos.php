@@ -200,8 +200,8 @@ try {
 
                   if ($row['status'] == 'F') {
                     echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">
-                    <a id="myLink" title="Clique para finalizar o Evento" onclick="eventoFinalizado()">
-                    <span class="material-icons">done</span>
+                    <a id="myLink" title="Evento já finalizado!" onclick="eventoFinalizado()">
+                    <span class="material-icons">check_circle</span>
                     </a></div>';
                   } else {
                     echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">
