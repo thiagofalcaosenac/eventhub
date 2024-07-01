@@ -20,10 +20,10 @@ try {
       // recebe os valores do formulário em variáveis locais
       $nome = $_POST['nome'];
       $descricao = $_POST['descricao'];
-      $capacidade = $_POST['capacidade'];
+      $capacidade = intval($_POST['capacidade']);
       $endereco = $_POST['endereco'];
       $preco = $_POST['preco'];
-      $comodidades = $_POST['comodidades'];
+      $comodidades = intval($_POST['comodidades']);
 
       $tamanho_imagem = $_FILES['foto']['size'];
       $tipo_imagem = $_FILES['foto']['type'];
@@ -207,7 +207,7 @@ try {
                 </div>
 
                 <div class="col-md-12">
-                  <input type="int" name="capacidade" class="form-control" placeholder="Capacidade" required>
+                  <input type="number" min="0.00" max="100000.00" name="capacidade" class="form-control" placeholder="Capacidade" required>
                 </div>
 
                 <div class="col-md-12">
@@ -219,7 +219,7 @@ try {
                 </div>
 
                 <div class="col-md-12">
-                  <input type="int" name="comodidades" class="form-control" placeholder="Comodidades" required>
+                  <input type="number" min="0.00" max="100000.00" name="comodidades" class="form-control" placeholder="Comodidades" required>
                 </div>
 
                 <div class="col-md-12">
@@ -259,7 +259,9 @@ try {
                                           .setLngLat(coordinates)
                                           .addTo(map);
                                   } else {
-                                      alert('Address not found');
+                                      if (address != undefined && address != "") {
+                                        alert('Endereço não encontrado!');
+                                      }
                                   }
                               });
                             }
