@@ -44,9 +44,8 @@
 
         // executa a query
         $statement->execute();
-        $pdo->commit();
 
-        if ($pdo->rowCount() == 1) {
+        if ($statement->rowCount() == 1) {
           Session::set('eventhub', [
             'idUsuario' => $idUsuario,
             'perfil' => $tipo,
@@ -190,7 +189,7 @@
                 </div>
 
                 <div class="col-md-12">
-                  <input type="text" name="id" class="form-control" placeholder="Id" readonly value="<?php echo (isset($resultado['id'])) ? $resultado['id'] : "" ?>">
+                  <input hidden type="text" name="id" class="form-control" placeholder="Id" readonly value="<?php echo (isset($resultado['id'])) ? $resultado['id'] : "" ?>">
                 </div>
 
                 <div class="col-md-12">

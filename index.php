@@ -119,7 +119,7 @@ try {
         if (!(isset($idUsuario))) {
           echo '<a class="btn-getstarted" href="login/login.php">Acessar</a>';
         } else {
-          echo '<a class="btn-getstarted" href="" onclick="logout(); return false;">Logout</a>';
+          echo '<a class="btn-getstarted" href="" onclick="logout(); return false;">Sair</a>';
         }
       ?>
     </div>

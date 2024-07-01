@@ -7,13 +7,7 @@ try {
   $perfil = Session::getProfileUser();
 
   // verifica se os campos foram preenchidos e se o formulário foi enviado
-  if (isset($_POST['titulo']) && 
-      isset($_POST['descricao']) && 
-      isset($_POST['dataHoraInicial']) &&
-      isset($_POST['dataHoraFinal']) && 
-      isset($_POST['status']) &&
-      isset($_POST['tipo']) && 
-      isset($_POST['id_espaco'])) {
+  if (isset($_POST['titulo'])) {
 
       // inclui o arquivo de conexão com o banco de dados
       include("../database/connection.php");
@@ -23,35 +17,35 @@ try {
       $descricao = $_POST['descricao'];
       $dataHoraInicial = $_POST['dataHoraInicial'];
       $dataHoraFinal = $_POST['dataHoraFinal'];
-      $status = $_POST['status'];
+      $status_evento = $_POST['status'];
       $tipo = $_POST['tipo'];
       $id_espaco = $_POST['id_espaco'];
       $precoTotal = $_POST['precoTotal'];
 
       // cria a query de inserção no banco de dados
       $sql = "INSERT INTO eventos (titulo,descricao,data_hora_inicial,data_hora_final,status,tipo,id_espaco,preco_total, id_usuario) 
-      VALUES (:titulo,:descricao,:dataHoraInicial,:dataHoraFinal,:status,:tipo,:id_espaco,:precoTotal, :id_usuario)";
+      VALUES (:titulo,:descricao,:dataHoraInicial,:dataHoraFinal,:status_evento,:tipo,:id_espaco,:preco_total, :id_usuario)";
       // prepara a query para ser executada
-      $pdo = $pdo->prepare($sql);
+      $statement = $pdo->prepare($sql);
 
       // substitui os parâmetros da query
-      $pdo->bindParam(":titulo", $titulo);
-      $pdo->bindParam(":descricao", $descricao);
-      $pdo->bindParam(":dataHoraInicial", $dataHoraInicial);
-      $pdo->bindParam(":dataHoraFinal", $dataHoraFinal);
-      $pdo->bindParam(":status", $status);
-      $pdo->bindParam(":tipo", $tipo);
-      $pdo->bindParam(":id_espaco", $id_espaco);
-      $pdo->bindParam(":precoTotal", $precoTotal);
-      $pdo->bindParam(":id_usuario", $idUsuario);
+      $statement->bindParam(":titulo", $titulo);
+      $statement->bindParam(":descricao", $descricao);
+      $statement->bindParam(":dataHoraInicial", $dataHoraInicial);
+      $statement->bindParam(":dataHoraFinal", $dataHoraFinal);
+      $statement->bindParam(":status_evento", $status_evento);
+      $statement->bindParam(":tipo", $tipo);
+      $statement->bindParam(":id_espaco", $id_espaco);
+      $statement->bindParam(":preco_total", $precoTotal);
+      $statement->bindParam(":id_usuario", $idUsuario);
       
       // executa a query
-      $pdo->execute();
+      $statement->execute();
       // verifica se a query foi executada com sucesso
 
-      if ($pdo->rowCount() == 1) {
+      if ($statement->rowCount() == 1) {
           $mensagem = "Evento inserido com sucesso!";
-          header("Location: eventos.php");
+          header("Location: listar_eventos.php");
       } else {
           $mensagem = "Erro ao inserir evento!";
       }
@@ -232,7 +226,7 @@ try {
           <div class="col-lg-5 quote-bg" style="background-image: url(../assets/img/quote-bg.jpg);"></div>
 
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-            <form action="" method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
+            <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
               <!-- Evento - id(PK), titulo, descricao, dataHoraInicial, dataHoraFinal, tipo, status, precoTotal, id_usuario(FK), id_espaco(FK) -->
 
               <div class="row gy-4">
@@ -262,11 +256,11 @@ try {
                 </div>
 
                 <div class="col-md-12">
-                  <label for="status">Status:</label>
-                  <select id="status" name="status" disabled>
+                  <label for="selStatus">Status:</label>
+                  <select id="selStatus" name="status">
                     <option value="A">Aberto</option>
                     <option value="F">Finalizado</option>
-                  </select>                  
+                  </select>
                 </div>
                 
 
@@ -311,7 +305,7 @@ try {
                     <div class="input-group-prepend">
                         <span class="input-group-text">R$</span>
                     </div>
-                    <input type="text" class="form-control" placeholder="0.00" id="precoTotal" name="precoTotal" disabled />
+                    <input type="text" class="form-control" placeholder="0.00" id="precoTotal" name="precoTotal" />
                 </div>
 
 
