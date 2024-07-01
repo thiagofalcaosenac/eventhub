@@ -67,6 +67,10 @@ try {
     }
 
     function eventoFinalizado(){ alert("Evento já finalizado!")}
+
+    function avaliarEspaco(idEspaco) { 
+      window.open("../avaliacoes/avaliacoes.php?idEspaco=" + idEspaco);
+    }
   </script>
 
 </head>
@@ -157,7 +161,7 @@ try {
                 echo '<div class="container">';
 
                 echo '<div class="row">';
-                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Id</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Código</h4></div>';
                 echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Título</h4></div>';
                 echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Descrição</h4></div>';
                 echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Data Inicial</h4></div>';
@@ -166,7 +170,7 @@ try {
                 echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Status</h4></div>';
                 echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Preço Total</h4></div>';
                 echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Espaço</h4></div>';
-                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Finalizar</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Ações</h4></div>';
                 echo '</div>';
 
                 while ($row = $data->fetch()) {
@@ -202,12 +206,20 @@ try {
                     echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">
                     <a id="myLink" title="Evento já finalizado!" onclick="eventoFinalizado()">
                     <span class="material-icons">check_circle</span>
-                    </a></div>';
+                    </a>
+                    <a id="myLink" title="Avaliar Espaço" onclick="avaliarEspaco(' . $row['id_espaco'] . '); return false;">
+                    <span class="material-icons">star_rate</span>
+                    </a>
+                    </div>';
                   } else {
                     echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">
                     <a id="myLink" title="Clique para finalizar o Evento" onclick="finalizarEvento(' . $row['id'] . ');return false;">
                     <span class="material-icons">done</span>
-                    </a></div>';
+                    </a>
+                    <a id="myLink" title="Avaliar Espaço" onclick="avaliarEspaco(' . $row['id_espaco'] . '); return false;">
+                    <span class="material-icons">star_rate</span>
+                    </a>                    
+                    </div>';
                   }
 
                   echo '</div>';

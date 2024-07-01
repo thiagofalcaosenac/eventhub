@@ -183,7 +183,7 @@ try {
                 echo '<div class="container">';
                 echo '<div class="row">';
       
-                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-1 border" style="background-color:#DCDCDC;"><h4>Id</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-1 border" style="background-color:#DCDCDC;"><h4>Código</h4></div>';
                 echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-2 border" style="background-color:#DCDCDC;"><h4>Nome do Espaço</h4></div>';
                 echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-2 border" style="background-color:#DCDCDC;"><h4>Classificação</h4></div>';
                 echo '<div data-aos="fade-up" data-aos-delay="100" class="col-md-7 border" style="background-color:#DCDCDC;"><h4>Comentário</h4></div>';

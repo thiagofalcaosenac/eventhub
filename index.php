@@ -42,7 +42,9 @@ try {
 
   <script>
     function abrirTelaListarEspacos() {
-        window.open("./espacos/listar_espacos.php?filtroIndex=" + $('#endereco').val());
+        if ($('#endereco').val() != "") {
+          window.open("./espacos/listar_espacos.php?filtroIndex=" + $('#endereco').val());
+        }
     }
 
     function logout() {

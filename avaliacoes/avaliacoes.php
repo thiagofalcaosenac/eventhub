@@ -183,16 +183,26 @@ try {
                 <!-- Aqui vai carregar os espaços cadastrados existentes no sistema. -->
 
                 <div class="col-md-12">
-                  <label for="id_espaco">Espaço:</label>
-                  <select id="id_espaco" name="id_espaco">
+                  <label for="selEspaco">Espaço:</label>
+                  <select id="selEspaco" name="id_espaco">
                   <?php
                     include('../database/connection.php');
+
+                    if (isset($_GET['idEspaco'])) {
+                      $espacoSelecionado = $_GET['idEspaco'];
+                    } else {
+                      $espacoSelecionado = '';
+                    }
 
                     $data = $pdo->prepare('SELECT * FROM espacos');
                     $data->execute();
 
                     while ($row = $data->fetch()) {
-                      echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['descricao'] . "</option>";
+                      if ($row['id'] == $espacoSelecionado) {
+                        echo "<option value='". $row['id'] ."' selected>" . $row['id'] . " - " . $row['nome'] . "</option>";
+                      } else {
+                        echo "<option value='". $row['id'] ."'>" . $row['id'] . " - " . $row['nome'] . "</option>";    
+                      }
                     }
                   ?>
                   </select>

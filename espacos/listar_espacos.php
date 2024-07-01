@@ -176,9 +176,13 @@
                   if (isset($perfil) && $perfil == 'L') {
                     echo '<h3 class="card-title">' . $row['nome'] . "</h3>"; 
                   } else {
-                    echo "<a href='atualizar_espaco.php?idEspaco=" . $row['id'] . "'>";
-                    echo '<h3 class="card-title"><i class="glyphicon glyphicon-edit">' . $row['nome'] . "</i></h3>";
-                    echo '</a>';
+                    if (isset($idUsuario) && $idUsuario == $row['id_usuario']) {
+                      echo "<a href='atualizar_espaco.php?idEspaco=" . $row['id'] . "'>";
+                      echo '<h3 class="card-title"><i class="glyphicon glyphicon-edit">' . $row['nome'] . "</i></h3>";
+                      echo '</a>';
+                    } else {
+                      echo '<h3 class="card-title">' . $row['nome'] . "</h3>"; 
+                    }
                   }
                 }
                 echo "<p> Descrição: " . $row['descricao'] . "</p>";
@@ -186,8 +190,11 @@
                 echo ' <input type="hidden" name="id" value="'.$row['id'].'">';
                 echo "</form>";
                 echo '<a class="btn btn-primary" onclick="abrirTelaListarAvaliacoes('. $row['id'] .')">Avaliações</a>';
-                echo '&nbsp;';
-                echo '<a class="btn btn-primary" onclick="document.getElementById(\'form_'.$row['id'].'\').submit();">Realizar Evento</a>';
+
+                if (isset($idUsuario) && $idUsuario != $row['id_usuario']) {
+                  echo '&nbsp;';
+                  echo '<a class="btn btn-primary" onclick="document.getElementById(\'form_'.$row['id'].'\').submit();">Realizar Evento</a>';
+                }
 
                 echo "</div>";
                 echo "</div>";
