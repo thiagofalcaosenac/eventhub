@@ -44,6 +44,18 @@ try {
     function abrirTelaListarEspacos() {
         window.open("./espacos/listar_espacos.php?filtroIndex=" + $('#endereco').val());
     }
+
+    function logout() {
+      $.ajax({
+          data: {},
+          url: './sessao/Logout.php',
+          type: 'POST',
+          success: function(response) {
+            location.replace("index.php");
+          }
+      });
+    }
+
   </script>
 </head>
 
@@ -106,6 +118,8 @@ try {
       <?php
         if (!(isset($idUsuario))) {
           echo '<a class="btn-getstarted" href="login/login.php">Acessar</a>';
+        } else {
+          echo '<a class="btn-getstarted" href="" onclick="logout(); return false;">Logout</a>';
         }
       ?>
     </div>
