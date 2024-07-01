@@ -2,14 +2,11 @@
 
   try {
     require_once("../sessao/Session.php");
-    Session::start();
-
-    // inclui o arquivo de conexão com o banco de dados
     include("../database/connection.php");
 
-    if (Session::isSessionActive()) {
-      $idUsuario = Session::getIdUser();
-    }
+    Session::start();
+    $idUsuario = Session::getIdUser();
+    $perfil = Session::getProfileUser();
 
     // verifica se os campos foram preenchidos e se o formulário foi enviado
     if (isset($_POST['nome']) && 
