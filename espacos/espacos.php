@@ -97,9 +97,8 @@ try {
   <link href="../assets/css/main.css" rel="stylesheet">
 
   
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
-<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
-<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css" type="text/css">
 
 </head>
 
@@ -226,8 +225,8 @@ try {
                       var map = new mapboxgl.Map({
                           container: 'map',
                           style: 'mapbox://styles/mapbox/streets-v12',
-                          center: [-74.5, 40], // Initial map center coordinates [lng, lat]
-                          zoom: 9 // Initial map zoom level
+                          center: [-48.847977, -26.301477], 
+                          zoom: 9
                       });
 
                       function showAddressOnMap() {
@@ -239,8 +238,8 @@ try {
                                       var coordinates = data.features[0].geometry.coordinates;
                                       map.flyTo({
                                           center: coordinates,
-                                          essential: true, // this animation is considered essential with respect to prefers-reduced-motion
-                                          zoom: 14
+                                          essential: true, 
+                                          zoom: 18
                                         });
                                         console.log(coordinates);
 
@@ -260,7 +259,7 @@ try {
                     </div>
                   </div>
               </div>
-                <div class="col-md-12 text-center">
+                <div class="col-md-12 text-center mt-2">
                   <?php
                     echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
                   ?>
