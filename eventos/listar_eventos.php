@@ -1,67 +1,16 @@
 <?php
 
 try {
-
+  require_once '../database/connection.php';
   require_once("../sessao/Session.php");
   Session::start();
   $idUsuario = Session::getIdUser();
   $perfil = Session::getProfileUser();
 
-  if (isset($_POST['nome']) && 
-      isset($_POST['descricao']) && 
-      isset($_POST['capacidade']) &&
-      isset($_POST['endereco']) && 
-      isset($_POST['preco']) &&
-      isset($_POST['comodidades'])) {
-
-      // inclui o arquivo de conexão com o banco de dados
-      include("../database/connection.php");
-
-      // recebe os valores do formulário em variáveis locais
-      $nome = $_POST['nome'];
-      $descricao = $_POST['descricao'];
-      $capacidade = $_POST['capacidade'];
-      $endereco = $_POST['endereco'];
-      $preco = $_POST['preco'];
-      $comodidades = $_POST['comodidades'];
-
-      $tamanho_imagem = $_FILES['foto']['size'];
-      $tipo_imagem = $_FILES['foto']['type'];
-      $nome_foto = $_FILES['foto']['name'];
-
-      $fp = fopen($_FILES['foto']['tmp_name'], 'rb');
-
-      // cria a query de inserção no banco de dados
-      $sql = "INSERT INTO espacos (nome,descricao,capacidade,endereco,preco,comodidades, nome_imagem, tamanho_imagem, tipo_imagem, foto, id_usuario) 
-              VALUES (:nome,:descricao,:capacidade,:endereco,:preco,:comodidades, :nome_foto, :tamanho_imagem, :tipo_imagem, :imagem, :id_usuario)";
-      // prepara a query para ser executada
-      $pdo = $pdo->prepare($sql);
-
-      // substitui os parâmetros da query
-      $pdo->bindParam(":nome", $nome);
-      $pdo->bindParam(":descricao", $descricao);
-      $pdo->bindParam(":capacidade", $capacidade);
-      $pdo->bindParam(":endereco", $endereco);
-      $pdo->bindParam(":preco", $preco);
-      $pdo->bindParam(":comodidades", $comodidades);
-      $pdo->bindParam(":id_usuario", $idUsuario);
-
-      $pdo->bindParam(":nome_foto", $nome_foto);
-      $pdo->bindParam(":tamanho_imagem", $tamanho_imagem);
-      $pdo->bindParam(":tipo_imagem", $tipo_imagem);
-      $pdo->bindParam(":imagem", $fp, PDO::PARAM_LOB);
-
-      // executa a query
-      $pdo->execute();
-      fclose($fp);
-      // verifica se a query foi executada com sucesso
-
-      if ($pdo->rowCount() == 1) {
-          $mensagem = "Espaço inserido com sucesso!";
-          header("Location: listar_espacos.php");
-      } else {
-          $mensagem = "Erro ao inserir espaço!";
-      }
+  if (isset($_GET['idEspaco'])) {
+    $idEspaco = $_GET['idEspaco'];
+  } else {
+    $idEspaco = NULL;
   }
 } catch (Exception $e) {
   echo 'Exceção capturada: ',  $e->getMessage(), "\n";
@@ -86,6 +35,10 @@ try {
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
   <!-- Vendor CSS Files -->
   <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -93,9 +46,29 @@ try {
   <link href="../assets/vendor/aos/aos.css" rel="stylesheet">
   <link href="../assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="../assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!-- Main CSS File -->
   <link href="../assets/css/main.css" rel="stylesheet">
+
+  <script>
+    function finalizarEvento(idEvento) {
+      $.ajax({
+          data: {
+            idEvento: idEvento,
+          },
+          url: 'FinalizarEvento.php',
+          type: 'POST',
+          success:function(response) {
+            alert('Evento finalizado com sucesso!');
+            location.reload();
+          }
+      });
+    }
+
+    function eventoFinalizado(){ alert("Evento já finalizado!")}
+  </script>
+
 </head>
 
 <body class="get-a-quote-page">
@@ -121,12 +94,12 @@ try {
           
           <?php
             if ((isset($perfil) && $perfil == 'L') || (!(isset($idUsuario)))) {
-              echo '<li><a href="listar_espacos.php" class="active">Espaços</a></li>';
+              echo '<li><a href="../espacos/listar_espacos.php">Espaços</a></li>';
             } else {
-              echo '<li class="dropdown"><a href="#" class="active"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
+              echo '<li class="dropdown"><a href="#"><span>Espaços</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
-              echo '<li><a href="listar_espacos.php">Listagem</a></li>';
-              echo '<li><a href="espacos.php">Cadastro</a></li>';
+              echo '<li><a href="../espacos/listar_espacos.php">Listagem</a></li>';
+              echo '<li><a href="../espacos/espacos.php">Cadastro</a></li>';
               echo '</ul>';
               echo '</li>';
             }
@@ -136,12 +109,12 @@ try {
             if (isset($idUsuario)) {
               echo '<li class="dropdown"><a href="#"><span>Eventos</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
-              echo '<li><a href="../eventos/listar_eventos.php">Listagem</a></li>';
-              echo '<li><a href="../eventos/eventos.php">Cadastrar</a></li>';
+              echo '<li><a href="listar_eventos.php">Listagem</a></li>';
+              echo '<li><a href="eventos.php">Cadastrar</a></li>';
               echo '</ul>';
               echo '</li>';
 
-              echo '<li class="dropdown"><a href="#"><span>Avaliações</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
+              echo '<li class="dropdown"><a class="active" href="#"><span>Avaliações</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>';
               echo '<ul>';
               echo '<li><a href="../avaliacoes/avaliacoes.php">Cadastrar</a></li>';
               echo '<li><a href="../avaliacoes/listar_avaliacoes.php">Listar Avaliações</a></li>';
@@ -161,12 +134,12 @@ try {
     <!-- Page Title -->
     <div class="page-title position-relative" data-aos="fade" style="background-image: url(../assets/img/page-title-bg.jpg);">
       <div class="container position-relative">
-        <h1 class="">Tela de Espaços</h1>
-        <p>Nesta tela é possível fazer a manipulação de dados do espaço</p>
+        <h1 class="">Listagem dos Eventos</h1>
+        <p>Nesta tela é possível visualizar os dados das eventos</p>
         <nav class="breadcrumbs">
           <ol>
             <li><a href="../index.php">Home</a></li>
-            <li class="current">Tela de Espaços</li>
+            <li class="current">Listagem dos Eventos</li>
           </ol>
         </nav>
       </div>
@@ -175,81 +148,77 @@ try {
     <!-- Get A Quote Section -->
     <section id="get-a-quote" class="get-a-quote section">
 
-      <div class="container">
+    <div id="gridAvaliacoes">
+        <?php           
+            try {
+                $data = $pdo->prepare('SELECT * FROM eventos where id_usuario = '.$idUsuario);
+                $data->execute();
 
-        <div class="row g-0" data-aos="fade-up" data-aos-delay="100">
+                echo '<div class="container">';
 
-          <div class="col-lg-5 quote-bg" style="background-image: url(../assets/img/quote-bg.jpg);"></div>
+                echo '<div class="row">';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Id</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Título</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Descrição</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Data Inicial</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Data Final</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Tipo</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Status</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Preço Total</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Espaço</h4></div>';
+                echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#DCDCDC;"><h4>Finalizar</h4></div>';
+                echo '</div>';
 
-          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-            <form method="post" enctype="multipart/form-data" data-aos="fade-up" data-aos-delay="200" class="php-email-form">
-              <!-- Espaço - id(PK), nome, descricao, capacidade, endereco, preco, comodidades, avaliacaoMedia, foto, id_usuario(FK) -->
+                while ($row = $data->fetch()) {
+                  $nomeEspaco = $pdo->query('select nome from espacos where id = ' . $row['id_espaco'])->fetchColumn(); 
 
-              <div class="row gy-4">
+                  echo '<div class="row">';
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">' . $row['id'] . '</div>';
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">' . $row['titulo'] . '</div>';
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">' . $row['descricao'] . '</div>';
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">' . $row['data_hora_inicial'] . '</div>';
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">' . $row['data_hora_final'] . '</div>';
 
-                <div class="col-lg-12">
-                  <h4>Informe dados do espaço</h4>
-                </div>
+                  if ($row['tipo'] == 'A') {
+                    echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">Aniversário</div>';
+                  } else if ($row['tipo'] == 'F') {
+                    echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">Formatura</div>';
+                  } else if ($row['tipo'] == 'R') {
+                    echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">Reunião</div>';
+                  } else {
+                    echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">Outros</div>';                    
+                  }
 
-                <div class="col-md-12">
-                  <input type="text" name="id" class="form-control" placeholder="Id" readonly hidden>
-                </div>
+                  if ($row['status'] == 'A') {
+                    echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">Aberto</div>';
+                  } else {
+                    echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">Fechado</div>';
+                  }
 
-                <div class="col-md-12">
-                  <input type="text" name="nome" class="form-control" placeholder="Nome" required>
-                </div>
-                
-                <div class="col-md-12">
-                  <textarea class="form-control" name="descricao" rows="6" placeholder="Descrição" required=""></textarea>
-                </div>
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">R$ ' . $row['preco_total'] . '</div>';
+                  echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">' . $nomeEspaco . '</div>';
 
-                <div class="col-md-12">
-                  <input type="int" name="capacidade" class="form-control" placeholder="Capacidade" required>
-                </div>
+                  if ($row['status'] == 'F') {
+                    echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">
+                    <a id="myLink" title="Clique para finalizar o Evento" onclick="eventoFinalizado()">
+                    <span class="material-icons">done</span>
+                    </a></div>';
+                  } else {
+                    echo '<div data-aos="fade-up" data-aos-delay="100" class="col-sm-1 border" style="background-color:#FFFAFA;">
+                    <a id="myLink" title="Clique para finalizar o Evento" onclick="finalizarEvento(' . $row['id'] . ');return false;">
+                    <span class="material-icons">done</span>
+                    </a></div>';
+                  }
 
-                <div class="col-md-12">
-                  <input type="text" name="endereco" class="form-control" placeholder="Endereço" required>
-                </div>
+                  echo '</div>';
+                }
 
-                <div class="col-md-12">
-                  <input type="number" min="0.00" max="100000.00" name="preco" class="form-control" placeholder="Preço" required>
-                </div>
-
-                <div class="col-md-12">
-                  <input type="int" name="comodidades" class="form-control" placeholder="Comodidades" required>
-                </div>
-
-                <div class="col-md-12">
-                  <input type="file" name="foto" class="form-control" placeholder="Foto">
-                </div>
-
-                <!-- APIKEU DO GOOGLE PARA O MAPA -> AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg -->
-                <!-- <div class="col-md-12 text-center">
-                  <iframe
-                    width="450"
-                    height="250"
-                    frameborder="0" style="border:0"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBLIPdM_cLMmQmBTSBkUDdXob9pBGCOYrg&q=Eiffel+Tower,Paris+France"
-                    allowfullscreen>
-                  </iframe>
-                </div> -->
-
-                <div class="col-md-12 text-center">
-                  <?php
-                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
-                  ?>
-
-                  <button type="submit">Salvar</button>
-                </div>
-
-              </div>
-            </form>
-          </div><!-- End Quote Form -->
-
-        </div>
-
-      </div>
+                echo '</div>';
+            } catch (Exception $e) {
+              echo 'Exceção capturada: ',  $e->getMessage(), "\n";
+            }
+          ?>
+    </div>
 
     </section><!-- /Get A Quote Section -->
 
