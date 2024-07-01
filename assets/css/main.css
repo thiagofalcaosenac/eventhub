@@ -2061,3 +2061,21 @@ section,
     transform: rotate(360deg);
   }
 }
+
+.btn-space,
+.btn-space:focus {
+  color: #ffffff !important;
+  background: #0d42ff !important;
+  font-size: 14px !important;
+  padding: 8px 25px !important;
+  margin: 0 0 0 30px !important;
+  border-radius: 4px !important;
+  transition: 0.3s !important;
+}
+
+.btn-space:hover,
+.btn-space:focus:hover {
+  color: #ffffff !important;
+  background: color-mix(in srgb, #0d42ff, transparent 15%) !important;
+  cursor: pointer;
+}

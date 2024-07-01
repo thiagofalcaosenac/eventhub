@@ -143,7 +143,7 @@
 
         <form action="#" method="post" class="form-search d-flex align-items-stretch mb-3" data-aos="fade-up" data-aos-delay="200">
           <?php $nome = (!empty($_POST['filtro']) ? $_POST['filtro'] : ''); ?>
-          <input type="text" class="form-control" value="<?php echo $nome; ?>" name="filtro" id="filtro" placeholder="Informe o endereço do local desejado">
+          <input style="margin-right:0.5% !important;" type="text" class="form-control" value="<?php echo $nome; ?>" name="filtro" id="filtro" placeholder="Informe o endereço do local desejado">
           <button type="submit" class="btn btn-primary">Buscar</button>
         </form>
 
@@ -189,11 +189,11 @@
                 echo "<form action='/eventhub/eventos/eventos.php' method='post' style='display:none;' id='form_".$row['id']."'>";
                 echo ' <input type="hidden" name="id" value="'.$row['id'].'">';
                 echo "</form>";
-                echo '<a class="btn btn-primary" onclick="abrirTelaListarAvaliacoes('. $row['id'] .')">Avaliações</a>';
+                echo '<a class="btn-space" onclick="abrirTelaListarAvaliacoes('. $row['id'] .')">Avaliações</a>';
 
                 if (isset($idUsuario) && $idUsuario != $row['id_usuario']) {
                   echo '&nbsp;';
-                  echo '<a class="btn btn-primary" onclick="document.getElementById(\'form_'.$row['id'].'\').submit();">Realizar Evento</a>';
+                  echo '<a class="btn-space" onclick="document.getElementById(\'form_'.$row['id'].'\').submit();">Realizar Evento</a>';
                 }
 
                 echo "</div>";
