@@ -28,33 +28,60 @@ try {
       $id_espaco = $_POST['id_espaco'];
       $precoTotal = $_POST['precoTotal'];
 
-      // cria a query de inserção no banco de dados
-      $sql = "INSERT INTO eventos (titulo,descricao,data_hora_inicial,data_hora_final,status,tipo,id_espaco,preco_total, id_usuario) 
-      VALUES (:titulo,:descricao,:dataHoraInicial,:dataHoraFinal,:status_evento,:tipo,:id_espaco,:preco_total, :id_usuario)";
-      // prepara a query para ser executada
+      $sql = "SELECT count(*) 
+              FROM eventos 
+              WHERE id_espaco = :id_espaco
+              AND (
+                (data_hora_inicial BETWEEN :data_hora_inicial AND :data_hora_final)
+                OR (data_hora_final BETWEEN :data_hora_inicial AND :data_hora_final)
+                OR (:data_hora_inicial BETWEEN data_hora_inicial AND data_hora_final)
+                OR (:data_hora_final BETWEEN data_hora_inicial AND data_hora_final)
+              )";
+
       $statement = $pdo->prepare($sql);
-
-      // substitui os parâmetros da query
-      $statement->bindParam(":titulo", $titulo);
-      $statement->bindParam(":descricao", $descricao);
-      $statement->bindParam(":dataHoraInicial", $dataHoraInicial);
-      $statement->bindParam(":dataHoraFinal", $dataHoraFinal);
-      $statement->bindParam(":status_evento", $status_evento);
-      $statement->bindParam(":tipo", $tipo);
       $statement->bindParam(":id_espaco", $id_espaco);
-      $statement->bindParam(":preco_total", $precoTotal);
-      $statement->bindParam(":id_usuario", $idUsuario);
-      
-      // executa a query
+      $statement->bindParam(":data_hora_inicial", $dataHoraInicial);
+      $statement->bindParam(":data_hora_final", $dataHoraFinal);
       $statement->execute();
-      // verifica se a query foi executada com sucesso
+      $num_rows = $statement->fetchColumn();
 
-      if ($statement->rowCount() == 1) {
-          $mensagem = "Evento inserido com sucesso!";
-          header("Location: listar_eventos.php");
+      if ($num_rows > 0) {
+        $date1 = new DateTime($dataHoraInicial);
+        $result1 = $date1->format('d/m/Y');
+        $date2 = new DateTime($dataHoraFinal);
+        $result2 = $date2->format('d/m/Y');
+
+        $mensagem = "Espaço está reservado para o período de " . $result1 . " até " . $result2 . "!";
       } else {
-          $mensagem = "Erro ao inserir evento!";
+        // cria a query de inserção no banco de dados
+        $sql = "INSERT INTO eventos (titulo,descricao,data_hora_inicial,data_hora_final,status,tipo,id_espaco,preco_total, id_usuario) 
+        VALUES (:titulo,:descricao,:dataHoraInicial,:dataHoraFinal,:status_evento,:tipo,:id_espaco,:preco_total, :id_usuario)";
+        // prepara a query para ser executada
+        $statement = $pdo->prepare($sql);
+
+        // substitui os parâmetros da query
+        $statement->bindParam(":titulo", $titulo);
+        $statement->bindParam(":descricao", $descricao);
+        $statement->bindParam(":dataHoraInicial", $dataHoraInicial);
+        $statement->bindParam(":dataHoraFinal", $dataHoraFinal);
+        $statement->bindParam(":status_evento", $status_evento);
+        $statement->bindParam(":tipo", $tipo);
+        $statement->bindParam(":id_espaco", $id_espaco);
+        $statement->bindParam(":preco_total", $precoTotal);
+        $statement->bindParam(":id_usuario", $idUsuario);
+
+        // executa a query
+        $statement->execute();
+        // verifica se a query foi executada com sucesso
+
+        if ($statement->rowCount() == 1) {
+            $mensagem = "Evento inserido com sucesso!";
+            header("Location: listar_eventos.php");
+        } else {
+            $mensagem = "Erro ao inserir evento!";
+        }
       }
+      
   }
 } catch (Exception $e) {
   echo 'Exceção capturada: ',  $e->getMessage(), "\n";
@@ -241,6 +268,14 @@ try {
                   <h4>Informe dados do evento</h4>
                 </div>
 
+                <?php
+                  if (isset($mensagem)) {
+                    echo '<div class="col-md-12 text-center">' . $mensagem . '</br></div>';
+                  } else {
+                    echo "";
+                  }
+                ?>
+
                 <div class="col-md-12">
                   <input type="text" name="id" class="form-control" placeholder="Id" readonly hidden>
                 </div>
@@ -254,13 +289,31 @@ try {
                 </div>
 
                 <div class="col-md-12">
-                  <input type="datetime-local" id="dataHoraInicial" name="dataHoraInicial" class="form-control" placeholder="Data/Hora Inicial" required>
+                  <input type="date" id="dataHoraInicial" name="dataHoraInicial" class="form-control" placeholder="Data/Hora Inicial" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="datetime-local" id="dataHoraFinal" name="dataHoraFinal" class="form-control" placeholder="Data/Hora Final" required>
+                  <input type="date" id="dataHoraFinal" name="dataHoraFinal" class="form-control" placeholder="Data/Hora Final" required>
                 </div>
 
+                <script>
+                  function setMinDateTo(id, minDate) {
+                    var dateTime = document.getElementById(id);
+                    if (!minDate) {
+                      minDate = new Date().toISOString().split('T')[0];
+                    }
+                    dateTime.setAttribute('min', minDate);
+                  }
+
+                  setMinDateTo("dataHoraInicial");
+                  setMinDateTo("dataHoraFinal");
+
+                  var inicial = document.getElementById("dataHoraInicial");
+                  inicial.addEventListener('blur',() => {
+                    var dateTime = inicial.value;
+                    setMinDateTo("dataHoraFinal", dateTime);
+                  })
+                </script>
                 <div class="col-md-12">
                   <label for="selStatus">Status:</label>
                   <select id="selStatus" name="status">
@@ -316,10 +369,6 @@ try {
 
 
                 <div class="col-md-12 text-center">
-                  <?php
-                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
-                  ?>
-
                   <button type="submit">Salvar</button>
                 </div>
 
