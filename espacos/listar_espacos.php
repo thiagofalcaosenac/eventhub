@@ -34,8 +34,14 @@
   <link href="../assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="../assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
   <!-- Main CSS File -->
   <link href="../assets/css/main.css" rel="stylesheet">
@@ -44,6 +50,22 @@
       function abrirTelaListarAvaliacoes(idEspaco) {
         window.open("../avaliacoes/listar_avaliacoes.php?idEspaco=" + idEspaco);
       }
+
+
+      function detalharEspaco(capacidade, endereco, preco, comodidades, avaliacaoMedia) {
+        // var htmlCapacidade = "Capacidade: " + capacidade + " <br>";
+        // var htmlEndereco = "Endereço: " + endereco + " <br>";
+        // var htmlPreco = "Preço: " + preco + " <br>";
+        // var htmlComodidades = "Comodidades: " + comodidades + " <br>";
+        // var htmlAvaliacaoMedia = "Avaliação Média: " + avaliacaoMedia;
+        // var html = htmlCapacidade + htmlEndereco + htmlPreco + htmlComodidades + htmlAvaliacaoMedia;
+        var html = "teste";
+        $("#bodyModal").html(html);
+      }
+
+      function editarEspaco(idEspaco) {
+        window.open("atualizar_espaco.php?idEspaco=" + idEspaco);
+      }      
   </script>
 
 </head>
@@ -147,6 +169,21 @@
           <button type="submit" class="btn btn-primary">Buscar</button>
         </form>
 
+        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Detalhes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body" id="bodyModal">
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="row gy-4">
 
         <?php           
@@ -171,17 +208,26 @@
                 echo "</div>";
                 echo "<div class='card-body'>";
                 if (!(isset($idUsuario))) {
-                  echo '<h3 class="card-title">' . $row['nome'] . "</h3>";
+                  echo '<h3 class="card-title">' . $row['nome'] . ' <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#exampleModalLong" onClick="detalharEspaco()"><i class="fa fa-info-circle"></i></button> </h3>';
                 } else {
                   if (isset($perfil) && $perfil == 'L') {
-                    echo '<h3 class="card-title">' . $row['nome'] . "</h3>"; 
+                    echo '<h3 class="card-title">' . $row['nome'] . ' <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#exampleModalLong" onClick="detalharEspaco()"><i class="fa fa-info-circle"></i></button> </h3>'; 
                   } else {
                     if (isset($idUsuario) && $idUsuario == $row['id_usuario']) {
-                      echo "<a href='atualizar_espaco.php?idEspaco=" . $row['id'] . "'>";
-                      echo '<h3 class="card-title"><i class="glyphicon glyphicon-edit">' . $row['nome'] . "</i></h3>";
-                      echo '</a>';
+                      echo "<h3 class='card-title'>
+                      " . $row['nome'] . " 
+                      <button type='button' class='btn btn-outline-primary btn-sm' onClick='editarEspaco(" . $row['id'] . ")'><i class='fa fa-edit'></i> </button>
+                      <button type='button' class='btn btn-outline-primary btn-sm' data-toggle='modal' data-target='#exampleModalLong' onClick='detalharEspaco(
+                        " . $row['capacidade'] . ",
+                        '" . $row['endereco'] . "',
+                        '" . $row['preco'] . "',
+                        '" . $row['comodidades'] . "',
+                        '" . $row['avaliacaoMedia'] . "'
+                      )'>
+                      <i class='fa fa-info-circle'></i></button> 
+                      </h3>";
                     } else {
-                      echo '<h3 class="card-title">' . $row['nome'] . "</h3>"; 
+                      echo '<h3 class="card-title">' . $row['nome'] . ' <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#exampleModalLong" onClick="detalharEspaco()"><i class="fa fa-info-circle"></i></button> </h3>'; 
                     }
                   }
                 }
@@ -189,11 +235,10 @@
                 echo "<form action='/eventhub/eventos/eventos.php' method='post' style='display:none;' id='form_".$row['id']."'>";
                 echo ' <input type="hidden" name="id" value="'.$row['id'].'">';
                 echo "</form>";
-                echo '<a class="btn-space" onclick="abrirTelaListarAvaliacoes('. $row['id'] .')">Avaliações</a>';
-
+                
+                echo '<button type="button" class="btn-space" onClick="abrirTelaListarAvaliacoes('. $row['id'] .')">Avaliações</button>';
                 if (isset($idUsuario) && $idUsuario != $row['id_usuario']) {
-                  echo '&nbsp;';
-                  echo '<a class="btn-space" onclick="document.getElementById(\'form_'.$row['id'].'\').submit();">Realizar Evento</a>';
+                  echo '<button type="button" class="btn-space" onClick="document.getElementById(\'form_'.$row['id'].'\').submit();">Evento</button>';
                 }
 
                 echo "</div>";
