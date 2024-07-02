@@ -28,33 +28,56 @@ try {
       $id_espaco = $_POST['id_espaco'];
       $precoTotal = $_POST['precoTotal'];
 
-      // cria a query de inserção no banco de dados
-      $sql = "INSERT INTO eventos (titulo,descricao,data_hora_inicial,data_hora_final,status,tipo,id_espaco,preco_total, id_usuario) 
-      VALUES (:titulo,:descricao,:dataHoraInicial,:dataHoraFinal,:status_evento,:tipo,:id_espaco,:preco_total, :id_usuario)";
-      // prepara a query para ser executada
+      $sql = "SELECT count(*) 
+              FROM eventos 
+              WHERE id_espaco = :id_espaco
+              AND (
+                (data_hora_inicial BETWEEN :data_hora_inicial AND :data_hora_final)
+                OR (data_hora_final BETWEEN :data_hora_inicial AND :data_hora_final)
+                OR (:data_hora_inicial BETWEEN data_hora_inicial AND data_hora_final)
+                OR (:data_hora_final BETWEEN data_hora_inicial AND data_hora_final)
+              )";
+
       $statement = $pdo->prepare($sql);
-
-      // substitui os parâmetros da query
-      $statement->bindParam(":titulo", $titulo);
-      $statement->bindParam(":descricao", $descricao);
-      $statement->bindParam(":dataHoraInicial", $dataHoraInicial);
-      $statement->bindParam(":dataHoraFinal", $dataHoraFinal);
-      $statement->bindParam(":status_evento", $status_evento);
-      $statement->bindParam(":tipo", $tipo);
       $statement->bindParam(":id_espaco", $id_espaco);
-      $statement->bindParam(":preco_total", $precoTotal);
-      $statement->bindParam(":id_usuario", $idUsuario);
-      
-      // executa a query
+      $statement->bindParam(":data_hora_inicial", $dataHoraInicial);
+      $statement->bindParam(":data_hora_final", $dataHoraFinal);
       $statement->execute();
-      // verifica se a query foi executada com sucesso
+      $num_rows = $statement->fetchColumn();
 
-      if ($statement->rowCount() == 1) {
-          $mensagem = "Evento inserido com sucesso!";
-          header("Location: listar_eventos.php");
+
+      if ($num_rows > 0) {
+        $mensagem = "Espaço está reservado para essa data!";
       } else {
-          $mensagem = "Erro ao inserir evento!";
+        // cria a query de inserção no banco de dados
+        $sql = "INSERT INTO eventos (titulo,descricao,data_hora_inicial,data_hora_final,status,tipo,id_espaco,preco_total, id_usuario) 
+        VALUES (:titulo,:descricao,:dataHoraInicial,:dataHoraFinal,:status_evento,:tipo,:id_espaco,:preco_total, :id_usuario)";
+        // prepara a query para ser executada
+        $statement = $pdo->prepare($sql);
+
+        // substitui os parâmetros da query
+        $statement->bindParam(":titulo", $titulo);
+        $statement->bindParam(":descricao", $descricao);
+        $statement->bindParam(":dataHoraInicial", $dataHoraInicial);
+        $statement->bindParam(":dataHoraFinal", $dataHoraFinal);
+        $statement->bindParam(":status_evento", $status_evento);
+        $statement->bindParam(":tipo", $tipo);
+        $statement->bindParam(":id_espaco", $id_espaco);
+        $statement->bindParam(":preco_total", $precoTotal);
+        $statement->bindParam(":id_usuario", $idUsuario);
+
+        // executa a query
+        $statement->execute();
+        // verifica se a query foi executada com sucesso
+
+        if ($statement->rowCount() == 1) {
+            $mensagem = "Evento inserido com sucesso!";
+            header("Location: listar_eventos.php");
+        } else {
+            $mensagem = "Erro ao inserir evento!";
+        }
       }
+      
   }
 } catch (Exception $e) {
   echo 'Exceção capturada: ',  $e->getMessage(), "\n";
