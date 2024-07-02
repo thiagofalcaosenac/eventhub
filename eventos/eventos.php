@@ -254,13 +254,31 @@ try {
                 </div>
 
                 <div class="col-md-12">
-                  <input type="datetime-local" id="dataHoraInicial" name="dataHoraInicial" class="form-control" placeholder="Data/Hora Inicial" required>
+                  <input type="date" id="dataHoraInicial" name="dataHoraInicial" class="form-control" placeholder="Data/Hora Inicial" required>
                 </div>
 
                 <div class="col-md-12">
-                  <input type="datetime-local" id="dataHoraFinal" name="dataHoraFinal" class="form-control" placeholder="Data/Hora Final" required>
+                  <input type="date" id="dataHoraFinal" name="dataHoraFinal" class="form-control" placeholder="Data/Hora Final" required>
                 </div>
 
+                <script>
+                  function setMinDateTo(id, minDate) {
+                    var dateTime = document.getElementById(id);
+                    if (!minDate) {
+                      minDate = new Date().toISOString().split('T')[0];
+                    }
+                    dateTime.setAttribute('min', minDate);
+                  }
+
+                  setMinDateTo("dataHoraInicial");
+                  setMinDateTo("dataHoraFinal");
+
+                  var inicial = document.getElementById("dataHoraInicial");
+                  inicial.addEventListener('blur',() => {
+                    var dateTime = inicial.value;
+                    setMinDateTo("dataHoraFinal", dateTime);
+                  })
+                </script>
                 <div class="col-md-12">
                   <label for="selStatus">Status:</label>
                   <select id="selStatus" name="status">
