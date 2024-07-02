@@ -42,6 +42,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
   <!-- Main CSS File -->
   <link href="../assets/css/main.css" rel="stylesheet">
@@ -51,16 +52,18 @@
         window.open("../avaliacoes/listar_avaliacoes.php?idEspaco=" + idEspaco);
       }
 
+      function detalharEspaco(idEspaco) {
+        $.ajax({
+            data: {
+              idEspaco: idEspaco,
+            },
+            url: 'BuscarDetalhesEspaco.php',
+            type: 'GET',
+            success:function(response) {
+              $("#bodyModal").html(response);
+            }
+        });
 
-      function detalharEspaco(capacidade, endereco, preco, comodidades, avaliacaoMedia) {
-        // var htmlCapacidade = "Capacidade: " + capacidade + " <br>";
-        // var htmlEndereco = "Endereço: " + endereco + " <br>";
-        // var htmlPreco = "Preço: " + preco + " <br>";
-        // var htmlComodidades = "Comodidades: " + comodidades + " <br>";
-        // var htmlAvaliacaoMedia = "Avaliação Média: " + avaliacaoMedia;
-        // var html = htmlCapacidade + htmlEndereco + htmlPreco + htmlComodidades + htmlAvaliacaoMedia;
-        var html = "teste";
-        $("#bodyModal").html(html);
       }
 
       function editarEspaco(idEspaco) {
@@ -208,26 +211,29 @@
                 echo "</div>";
                 echo "<div class='card-body'>";
                 if (!(isset($idUsuario))) {
-                  echo '<h3 class="card-title">' . $row['nome'] . ' <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#exampleModalLong" onClick="detalharEspaco()"><i class="fa fa-info-circle"></i></button> </h3>';
+                  echo '<h3 class="card-title">' . $row['nome'] . ' <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#exampleModalLong" onClick="detalharEspaco(
+                    ' . $row['id'] . '                    
+                  )"><i class="fa fa-info-circle"></i></button> </h3>';
                 } else {
                   if (isset($perfil) && $perfil == 'L') {
-                    echo '<h3 class="card-title">' . $row['nome'] . ' <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#exampleModalLong" onClick="detalharEspaco()"><i class="fa fa-info-circle"></i></button> </h3>'; 
+                    echo '<h3 class="card-title">' . $row['nome'] . ' <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#exampleModalLong" onClick="detalharEspaco(
+                      ' . $row['id'] . '
+                    )"><i class="fa fa-info-circle"></i></button> </h3>'; 
                   } else {
                     if (isset($idUsuario) && $idUsuario == $row['id_usuario']) {
-                      echo "<h3 class='card-title'>
-                      " . $row['nome'] . " 
+                      echo "<h3 class='card-title'> " . $row['nome'] . " 
                       <button type='button' class='btn btn-outline-primary btn-sm' onClick='editarEspaco(" . $row['id'] . ")'><i class='fa fa-edit'></i> </button>
                       <button type='button' class='btn btn-outline-primary btn-sm' data-toggle='modal' data-target='#exampleModalLong' onClick='detalharEspaco(
-                        " . $row['capacidade'] . ",
-                        '" . $row['endereco'] . "',
-                        '" . $row['preco'] . "',
-                        '" . $row['comodidades'] . "',
-                        '" . $row['avaliacaoMedia'] . "'
+                        " . $row['id'] . "
                       )'>
                       <i class='fa fa-info-circle'></i></button> 
                       </h3>";
                     } else {
-                      echo '<h3 class="card-title">' . $row['nome'] . ' <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#exampleModalLong" onClick="detalharEspaco()"><i class="fa fa-info-circle"></i></button> </h3>'; 
+                      echo "<h3 class='card-title'>" . $row['nome'] . " 
+                      <button type='button' class='btn btn-outline-primary btn-sm' data-toggle='modal' data-target='#exampleModalLong' onClick='detalharEspaco(
+                        " . $row['id'] . "
+                      )'>
+                      <i class='fa fa-info-circle'></i></button> </h3>";
                     }
                   }
                 }
