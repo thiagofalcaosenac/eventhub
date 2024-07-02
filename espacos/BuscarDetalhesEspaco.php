@@ -1,15 +1,8 @@
 <?php
-    // Calcular o preço total do evento conforme a quantidade de diárias e baseado no preço para alugar o espaço.
-    // Após selecionar o Espaço, pegar a Data/Hora Final - Data/Hora Inicial = Total Diárias, 
-    // após isso multiplicar o preço do espaço pelo total de diárias e colocar o valor no campo Preço Total.
-
     try {
         include("../database/connection.php");
         $idEspaco = $_GET['idEspaco'];
-
-        // $espacoDetalhado = $pdo->query('select endereco from espacos where id = ' . $idEspaco)->fetch();
-        // print $espacoDetalhado;
-
+        
         $stmt = $pdo->prepare('SELECT capacidade,endereco,preco,comodidades,avaliacaoMedia FROM espacos where id=? LIMIT 1');
         $stmt->execute([$idEspaco]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
