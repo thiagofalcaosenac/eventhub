@@ -45,9 +45,13 @@ try {
       $statement->execute();
       $num_rows = $statement->fetchColumn();
 
-
       if ($num_rows > 0) {
-        $mensagem = "Espaço está reservado para essa data!";
+        $date1 = new DateTime($dataHoraInicial);
+        $result1 = $date1->format('d/m/Y');
+        $date2 = new DateTime($dataHoraFinal);
+        $result2 = $date2->format('d/m/Y');
+
+        $mensagem = "Espaço está reservado para o período de " . $result1 . " até " . $result2 . "!";
       } else {
         // cria a query de inserção no banco de dados
         $sql = "INSERT INTO eventos (titulo,descricao,data_hora_inicial,data_hora_final,status,tipo,id_espaco,preco_total, id_usuario) 
@@ -264,6 +268,14 @@ try {
                   <h4>Informe dados do evento</h4>
                 </div>
 
+                <?php
+                  if (isset($mensagem)) {
+                    echo '<div class="col-md-12 text-center">' . $mensagem . '</br></div>';
+                  } else {
+                    echo "";
+                  }
+                ?>
+
                 <div class="col-md-12">
                   <input type="text" name="id" class="form-control" placeholder="Id" readonly hidden>
                 </div>
@@ -357,10 +369,6 @@ try {
 
 
                 <div class="col-md-12 text-center">
-                  <?php
-                    echo (isset($mensagem)) ? "<div class='sent-message'>$mensagem</div>" : "";
-                  ?>
-
                   <button type="submit">Salvar</button>
                 </div>
 
